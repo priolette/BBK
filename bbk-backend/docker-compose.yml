@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  sqldata:
+    container_name: sqldata
+    image: postgres:16
+
+  api:
+    container_name: api
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: BBK.API/Dockerfile
+    depends_on:
+      - sqldata

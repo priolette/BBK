@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBK.API", "BBK.API\BBK.API.csproj", "{C42BC1AB-6C6C-45B4-B3F9-B9A1838C5E4D}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F37330D4-91DC-4A5E-B3EF-964C4E3DE98E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{37F32273-AA93-4850-A9DD-3BB4EDEE3910}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C42BC1AB-6C6C-45B4-B3F9-B9A1838C5E4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C42BC1AB-6C6C-45B4-B3F9-B9A1838C5E4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C42BC1AB-6C6C-45B4-B3F9-B9A1838C5E4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C42BC1AB-6C6C-45B4-B3F9-B9A1838C5E4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F37330D4-91DC-4A5E-B3EF-964C4E3DE98E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F37330D4-91DC-4A5E-B3EF-964C4E3DE98E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F37330D4-91DC-4A5E-B3EF-964C4E3DE98E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F37330D4-91DC-4A5E-B3EF-964C4E3DE98E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8B440652-5289-40B3-9C2B-F0E33019B15C}
+	EndGlobalSection
+EndGlobal

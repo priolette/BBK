@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  sqldata:
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root_password
+    ports:
+      - "5100:5432"
+    volumes:
+      - bbk-sqldata:/var/lib/postgresql/data
+
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
+      - ConnectionString=Host=sqldata;Database=bbk;Username=root;Password=root_password
+    ports:
+      - "5101:8080"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+volumes:
+  bbk-sqldata:
+    external: false
