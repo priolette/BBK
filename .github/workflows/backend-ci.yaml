@@ -1,0 +1,31 @@
+name: Backend CI
+
+on:
+  pull_request:
+    paths:
+      - "bbk-backend/**"
+    branches: ["*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: dotnet build
+    defaults:
+      run:
+        working-directory: bbk-backend
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Install dependencies
+        run: dotnet restore bbk-backend.sln
+      - name: Build
+        run: dotnet build bbk-backend.sln
