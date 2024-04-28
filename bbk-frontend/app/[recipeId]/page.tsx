@@ -3,8 +3,7 @@ import { dummyRecipes } from "@/data/recipies";
 export default function Page({ params }: { params: { recipeId: number } }) {
   console.log(params.recipeId)
   const recipeData = dummyRecipes.find((recipe) => recipe.id == params.recipeId);
-  console.log("testttt")
-  console.log(recipeData)
+
   if (!recipeData) {
     return <div>Recipe not found</div>;
   }
