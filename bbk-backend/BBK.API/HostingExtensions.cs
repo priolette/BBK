@@ -1,6 +1,7 @@
 ﻿using BBK.API.Data;
 using BBK.API.Filters;
 using BBK.API.Services.Recipes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -36,6 +37,22 @@ public static class HostingExtensions
         {
             options.UseNpgsql(builder.Configuration.GetRequiredValue("ConnectionString"));
         });
+    }
+
+    public static void AddAuth(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.Authority = builder.Configuration.GetRequiredValue("Identity:Url");
+            options.Audience = builder.Configuration.GetRequiredValue("Identity:Audience");
+        });
+
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy("Administration", policy => policy.RequireClaim("permissions", "administration"));
     }
 
     public static void AddApplicationServices(this WebApplicationBuilder builder)
@@ -87,9 +104,9 @@ public static class HostingExtensions
                     {
                         AuthorizationCode = new OpenApiOAuthFlow
                         {
-                            AuthorizationUrl = new Uri($"{identityUrl}/connect/authorize"),
-                            TokenUrl = new Uri($"{identityUrl}/connect/token"),
-                            RefreshUrl = new Uri($"{identityUrl}/connect/token"),
+                            AuthorizationUrl = new Uri($"{identityUrl}/authorize"),
+                            TokenUrl = new Uri($"{identityUrl}/oauth/token"),
+                            RefreshUrl = new Uri($"{identityUrl}/oauth/token"),
                             Scopes = scopes,
                         }
                     }
@@ -137,6 +154,10 @@ public static class HostingExtensions
             {
                 options.OAuthClientId(clientSection.GetRequiredValue("Id"));
                 options.OAuthClientSecret(clientSection.GetRequiredValue("Secret"));
+                options.OAuthAdditionalQueryStringParams(new Dictionary<string, string>
+                {
+                    ["audience"] = configuration.GetRequiredValue("Identity:Audience")
+                });
             }
 
             options.OAuthUsePkce();
