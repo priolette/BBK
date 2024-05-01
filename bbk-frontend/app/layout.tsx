@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Link from 'next/link'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -44,7 +45,7 @@ export default function RootLayout({
 function NavBar() {
   return (
     <nav className="flex w-full items-center justify-between border-b p-4 text-xl font-semibold">
-      <div>Recipes</div>
+      <Link href={'/'}>Recipes</Link>
       <ThemeToggle />
     </nav>
   );
