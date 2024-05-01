@@ -17,6 +17,8 @@ export default function Page({ params }: { params: { recipeId: number } }) {
         src={recipeData.image}
         alt={recipeData.name}
         className="mb-4 w-full rounded-lg"
+        width={0}
+        height={0}
       />
       <p className="mb-4 text-lg">{recipeData.description}</p>
       <h2 className="mb-2 text-2xl font-semibold">Ingredients:</h2>
