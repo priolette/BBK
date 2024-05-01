@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddConfiguration();
 builder.AddSerilog();
 builder.AddDatabase();
+builder.AddAuth();
 builder.AddApplicationServices();
 builder.AddOpenApi();
 
@@ -40,10 +41,14 @@ app.UseExceptionHandler(builder =>
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseOpenApi();
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Endpoint mapping
 app.MapGroup("/api/v1")

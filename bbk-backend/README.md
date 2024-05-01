@@ -1,9 +1,4 @@
-# BBK Front-end/Back-end
-PSK team project.
-
-# Setup
-
-## Back-end local setup
+# Back-end local setup
 
 **Requirements:**
 - Git 
