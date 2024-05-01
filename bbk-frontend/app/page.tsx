@@ -7,14 +7,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
-import { dummyRecipes } from "@/data/recipies";
-import Link from 'next/link'
+import { dummyRecipes } from "@/data/recipes";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <main className="flex flex-auto gap-4 p-4">
       {dummyRecipes.map((recipe) => (
-        <Link href={`/${recipe.id}`}>
+        <Link href={`/${recipe.id}`} key={recipe.id}>
           <Card key={recipe.id} className="">
             <CardHeader>
               <CardTitle>{recipe.name}</CardTitle>
