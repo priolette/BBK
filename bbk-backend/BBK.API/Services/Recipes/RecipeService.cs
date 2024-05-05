@@ -16,7 +16,7 @@ public class RecipeService(AppDbContext dbContext) : IRecipeService
         // TODO: add other filtering options
 
         var total = await query.CountAsync();
-        query = query.OrderBy(r => r.Name);
+        query = query.OrderBy(r => r.Title);
 
         if (pagination is not null)
         {

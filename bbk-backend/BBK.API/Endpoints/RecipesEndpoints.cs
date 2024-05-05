@@ -1,6 +1,5 @@
 ﻿using BBK.API.Contracts.Requests;
 using BBK.API.Contracts.Responses;
-using BBK.API.Data.Models;
 using BBK.API.Models;
 using BBK.API.Services.Recipes;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -44,10 +43,10 @@ public static class RecipesEndpoints
         };
 
         var result = await recipeService.GetAllRecipesAsync(pagination);
-        var recipes = result.Data.Select(r => r.ToResponse());
+        //var recipes = result.Data.Select(r => r.ToResponse());
 
-        var response = new PagedResponse<RecipeResponse>(recipes, pagination.PageNumber, pagination.PageSize, result.Total);
+        //var response = new PagedResponse<RecipeResponse>(recipes, pagination.PageNumber, pagination.PageSize, result.Total);
 
-        return TypedResults.Ok(response);
+        return TypedResults.Ok(result);
     }
 }
