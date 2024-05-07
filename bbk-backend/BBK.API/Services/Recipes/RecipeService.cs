@@ -32,4 +32,12 @@ public class RecipeService(AppDbContext dbContext) : IRecipeService
             Total = total
         };
     }
+    
+    public Task<Recipe?> GetRecipeByIdAsync(int id)
+    {
+        return _context.Recipes
+            .Include(x => x.Ingredients)
+            .Include(x => x.Comments)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
 }
