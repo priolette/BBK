@@ -6,4 +6,6 @@ namespace BBK.API.Services.Recipes;
 public interface IRecipeService
 {
     Task<ListResult<Recipe>> GetAllRecipesAsync(PaginationFilter? pagination);
+    Task<Recipe?> GetRecipeByIdAsync(int id);
+
 }

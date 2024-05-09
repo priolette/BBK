@@ -9,7 +9,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     private const string UtcNow = "now() at time zone 'utc'";
 
-    public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<Recipe> Recipes { get; init; }
+    
+    public DbSet<Comment> Comments { get; set; }
+    
+    public DbSet<Ingredient> Ingredients { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -105,6 +109,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Comment>(entity =>
         {
+            entity.ToTable("Comments", DefaultSchema);
+            
             entity.HasOne(e => e.Recipe)
                 .WithMany(e => e.Comments)
                 .HasForeignKey(e => e.RecipeId);
