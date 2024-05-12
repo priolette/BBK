@@ -11,21 +11,22 @@ import Image from "next/image";
 import Link from "next/link";
 
 async function getRecipes() {
-  const getRecipesPath = process.env.API_PATH + 'recipes';
+  const getRecipesPath = process.env.API_PATH + "recipes";
 
   const res = await fetch(getRecipesPath);
   if (!res.ok) {
     //what solution for errors ? Message component or some kind of notification
-    throw new Error('Failed to fetch data')
+    throw new Error("Failed to fetch data");
   }
- 
-  return res.json()
+
+  return res.json();
 }
 
 export default async function Home() {
-  const dummyImage = "https://handletheheat.com/wp-content/uploads/2017/03/Chewy-Brownies-Square-1.jpg";
+  const dummyImage =
+    "https://handletheheat.com/wp-content/uploads/2017/03/Chewy-Brownies-Square-1.jpg";
   const dummyAuthor = "Comming soon";
-  const recipes = await getRecipes()
+  const recipes = await getRecipes();
   return (
     <main className="flex flex-auto gap-4 p-4">
       {recipes.data.map((recipe: Recipe) => (
@@ -38,7 +39,7 @@ export default async function Home() {
             <CardContent className="px-0">
               <Image
                 src={dummyImage}
-                alt={dummyImage}
+                alt={recipe.title}
                 width={0}
                 height={0}
                 sizes="100vw"
