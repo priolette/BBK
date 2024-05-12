@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Recipe } from "@/types/Recipe";
 import Image from "next/image";
 import { dummyImage } from "@/data/recipes";
 import Link from "next/link";
@@ -28,6 +29,7 @@ export default async function Home({
           <Card key={recipe.id} className="">
             <CardHeader>
               <CardTitle>{recipe.title}</CardTitle>
+              <CardTitle>{recipe.title}</CardTitle>
               <CardDescription>{recipe.description}</CardDescription>
             </CardHeader>
             <CardContent className="px-0">
@@ -41,9 +43,7 @@ export default async function Home({
               />
             </CardContent>
             <CardFooter>
-              <CardDescription>
-                Created by: {recipe.createdById}
-              </CardDescription>
+              <CardDescription>Created by: {dummyAuthor}</CardDescription>
             </CardFooter>
           </Card>
         </Link>
