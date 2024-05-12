@@ -35,7 +35,7 @@ export default async function Home({
             <CardContent className="px-0">
               <Image
                 src={dummyImage}
-                alt={dummyImage}
+                alt={recipe.title}
                 width={0}
                 height={0}
                 sizes="100vw"
