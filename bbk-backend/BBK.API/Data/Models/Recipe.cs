@@ -1,8 +1,5 @@
-﻿using BBK.API.Contracts.Responses;
+﻿namespace BBK.API.Data.Models;
 
-namespace BBK.API.Data.Models;
-
-// TODO: this is an example model only
 public class Recipe
 {
     public int Id { get; set; }
@@ -11,6 +8,9 @@ public class Recipe
     public required string CreatedById { get; set; }
     public required DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? ModifiedAt { get; set; }
-    public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
-    public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
+
+    public virtual ICollection<Step> Steps { get; set; } = default!;
+    public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = default!;
+    public virtual ICollection<Upvote> Upvotes { get; set; } = default!;
+    public virtual ICollection<Comment> Comments { get; set; } = default!;
 }

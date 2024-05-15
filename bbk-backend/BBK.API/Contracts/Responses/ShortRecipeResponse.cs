@@ -8,4 +8,5 @@ public record ShortRecipeResponse
     public required string CreatedById { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? ModifiedAt { get; init; }
+    public int Upvotes { get; init; }
 }
