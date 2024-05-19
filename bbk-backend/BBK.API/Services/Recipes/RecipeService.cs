@@ -11,9 +11,9 @@ public class RecipeService(AppDbContext dbContext) : IRecipeService
 
     public async Task<ListResult<Recipe>> GetAllRecipesAsync(PaginationFilter? pagination)
     {
-        var query = _context.Recipes.AsQueryable();
-
-        // TODO: add other filtering options
+        var query = _context.Recipes
+            .Include(x => x.Upvotes)
+            .AsQueryable();
 
         var total = await query.CountAsync();
         query = query.OrderBy(r => r.Title);
@@ -33,11 +33,29 @@ public class RecipeService(AppDbContext dbContext) : IRecipeService
         };
     }
     
-    public Task<Recipe?> GetRecipeByIdAsync(int id)
+    public Task<RecipeResult?> GetRecipeByIdAsync(int id)
     {
+        // TODO: fix this
         return _context.Recipes
-            .Include(x => x.Ingredients)
-            .Include(x => x.Comments)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .Select(r => new RecipeResult
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Description = r.Description,
+                CreatedById = r.CreatedById,
+                CreatedAt = r.CreatedAt,
+                ModifiedAt = r.ModifiedAt,
+                Steps = r.Steps.ToList(),
+                RecipeIngredients = r.RecipeIngredients.Select(ri => new RecipeIngredientResult
+                {
+                    Id = ri.Id,
+                    Amount = ri.Amount,
+                    Ingredient = ri.Ingredient,
+                    Unit = ri.Unit
+                }).ToList(),
+                Upvotes = r.Upvotes.ToList(),
+                Comments = r.Comments.ToList()
+            })
+            .FirstOrDefaultAsync();
     }
 }

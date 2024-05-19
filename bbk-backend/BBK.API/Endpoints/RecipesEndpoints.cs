@@ -15,7 +15,7 @@ public static class RecipesEndpoints
 
         group.MapGet("/", GetAllRecipesAsync);
 
-        group.MapGet("/{id:int}", GetRecipeByIdAsync);
+        group.MapGet("/{recipeId}", GetRecipeByIdAsync);
 
         group.WithTags("Recipes");
 
@@ -56,16 +56,22 @@ public static class RecipesEndpoints
     /// <summary>
     /// This endpoint return recipe by id
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="recipeId"></param>
     /// <param name="recipeService"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    private static async Task<Results<Ok<RecipeResponse>, IResult>> GetRecipeByIdAsync(int id,
+    private static async Task<Results<Ok<RecipeResponse>, IResult>> GetRecipeByIdAsync(
+        int recipeId,
         IRecipeService recipeService,
         HttpContext context)
     {
-        var result = await recipeService.GetRecipeByIdAsync(id);
+        var recipe = await recipeService.GetRecipeByIdAsync(recipeId);
 
-        return result is null ? TypedResults.NotFound() : TypedResults.Ok(result.ToRecipeResponse());
+        if (recipe is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(recipe.ToRecipeResponse());
     }
 }
