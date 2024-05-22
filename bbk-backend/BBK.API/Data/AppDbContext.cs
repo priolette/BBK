@@ -22,6 +22,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         base.OnModelCreating(modelBuilder);
         
         ConfigureDataModels(modelBuilder);
+
+        modelBuilder.SeedDatabase();
     }
 
     private static void ConfigureDataModels(ModelBuilder modelBuilder)
