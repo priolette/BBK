@@ -43,6 +43,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseOpenApi();
+    app.MigrateDatabase();
 }
 
 app.UseHttpsRedirection();
