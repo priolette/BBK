@@ -167,6 +167,15 @@ public static class HostingExtensions
         app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
     }
 
+    public static void MigrateDatabase(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<AppDbContext>();
+
+        context.Database.Migrate();
+    }
+
     private static IConfigurationRoot GetConfiguration()
     {
         var builder=  new ConfigurationBuilder()
