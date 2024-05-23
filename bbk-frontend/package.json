@@ -1,5 +1,6 @@
 {
   "name": "bbk-frontend",
+  "proxy": "http://localhost:5101",
   "version": "0.1.0",
   "private": true,
   "scripts": {
