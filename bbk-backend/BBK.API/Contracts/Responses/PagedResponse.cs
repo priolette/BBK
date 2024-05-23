@@ -7,6 +7,7 @@ public record PagedResponse<T>
     public int PageNumber { get; set; }
     public int? PreviousPageNumber { get; set; }
     public int? NextPageNumber { get; set; }
+    public int? TotalRecords { get; set; }
 
     public PagedResponse(IEnumerable<T> data)
     {
@@ -29,5 +30,6 @@ public record PagedResponse<T>
         PageSize = data.Count();
         PreviousPageNumber = pageNumber > 1 ? pageNumber - 1 : null;
         NextPageNumber = total > pageNumber * pageSize ? pageNumber + 1 : null;
+        TotalRecords = total;
     }
 }
