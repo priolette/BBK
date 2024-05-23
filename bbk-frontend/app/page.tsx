@@ -7,23 +7,33 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
-import { dummyRecipes } from "@/data/recipes";
+import { dummyImage } from "@/data/recipes";
 import Link from "next/link";
+import { getAllRecipes } from "@/lib/server/recipes";
+import { RecipePagination } from "@/components/recipe-pagination";
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: { page?: number };
+}) {
+  const perPage = 10;
+  const currentPage = searchParams?.page || 1;
+  const data = await getAllRecipes(currentPage, perPage);
+
   return (
     <main className="flex flex-auto gap-4 p-4">
-      {dummyRecipes.map((recipe) => (
+      {data.data.map((recipe) => (
         <Link href={`/${recipe.id}`} key={recipe.id}>
           <Card key={recipe.id} className="">
             <CardHeader>
-              <CardTitle>{recipe.name}</CardTitle>
+              <CardTitle>{recipe.title}</CardTitle>
               <CardDescription>{recipe.description}</CardDescription>
             </CardHeader>
             <CardContent className="px-0">
               <Image
-                src={recipe.image}
-                alt={recipe.name}
+                src={dummyImage}
+                alt={dummyImage}
                 width={0}
                 height={0}
                 sizes="100vw"
@@ -31,11 +41,18 @@ export default function Home() {
               />
             </CardContent>
             <CardFooter>
-              <CardDescription>Created by: {recipe.author}</CardDescription>
+              <CardDescription>
+                Created by: {recipe.createdById}
+              </CardDescription>
             </CardFooter>
           </Card>
         </Link>
       ))}
+      <RecipePagination
+        itemCount={data.total || 1}
+        pageSize={perPage}
+        currentPage={currentPage}
+      />
     </main>
   );
 }

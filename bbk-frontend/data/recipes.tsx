@@ -29,3 +29,6 @@ export const dummyRecipes = [
       "https://handletheheat.com/wp-content/uploads/2017/03/Chewy-Brownies-Square-1.jpg",
   },
 ];
+
+export const dummyImage =
+  "https://handletheheat.com/wp-content/uploads/2017/03/Chewy-Brownies-Square-1.jpg";
