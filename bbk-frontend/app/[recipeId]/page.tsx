@@ -23,6 +23,7 @@ export default async function Page({
   const dummyImage =
     "https://handletheheat.com/wp-content/uploads/2017/03/Chewy-Brownies-Square-1.jpg";
   const dummyAuthor = "Coming soon";
+
   if (!recipeData) {
     return <div>Recipe not found</div>;
   }

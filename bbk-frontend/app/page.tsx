@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Recipe } from "@/types/Recipe";
 import Image from "next/image";
 import { dummyImage } from "@/data/recipes";
 import Link from "next/link";
