@@ -18,8 +18,6 @@ public static class RecipesEndpoints
 
         group.WithTags("Recipes");
 
-        group.RequireAuthorization();
-
         group.WithOpenApi();
 
         return app;
