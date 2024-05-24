@@ -1,15 +1,18 @@
 ﻿using BBK.API.Data;
-using BBK.API.Data.Models;
 using BBK.API.Models;
+using BBK.API.Services.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace BBK.API.Services.Recipes;
 
-public class RecipeService(AppDbContext dbContext) : IRecipeService
+public class RecipeService(
+    AppDbContext dbContext,
+    IUserService userService) : IRecipeService
 {
     private readonly AppDbContext _context = dbContext;
+    private readonly IUserService _userService = userService;
 
-    public async Task<ListResult<Recipe>> GetAllRecipesAsync(PaginationFilter? pagination)
+    public async Task<ListResult<ShortRecipeResult>> GetAllRecipesAsync(PaginationFilter? pagination)
     {
         var query = _context.Recipes
             .Include(x => x.Upvotes)
@@ -24,19 +27,28 @@ public class RecipeService(AppDbContext dbContext) : IRecipeService
             query = query.Skip(skip).Take(pagination.PageSize);
         }
 
-        var data = await query.ToListAsync();
+        var recipes = await query.ToListAsync();
 
-        return new ListResult<Recipe>
+        var userIds = recipes.Select(r => r.CreatedById).ToArray();
+        var users = await _userService.GetUsersByIdsAsync(userIds);
+
+        var results = recipes.Select(recipe => new ShortRecipeResult
         {
-            Data = data,
+            Recipe = recipe,
+            User = users.FirstOrDefault(u => u.UserId == recipe.CreatedById)
+        }).ToList();
+
+        return new ListResult<ShortRecipeResult>
+        {
+            Data = results,
             Total = total
         };
     }
     
-    public Task<RecipeResult?> GetRecipeByIdAsync(int id)
+    public async Task<RecipeResult?> GetRecipeByIdAsync(int id)
     {
         // TODO: fix this
-        return _context.Recipes
+        var recipe = await _context.Recipes
             .Select(r => new RecipeResult
             {
                 Id = r.Id,
@@ -57,5 +69,15 @@ public class RecipeService(AppDbContext dbContext) : IRecipeService
                 Comments = r.Comments.ToList()
             })
             .FirstOrDefaultAsync();
+
+        if (recipe is null)
+        {
+            return null;
+        }
+
+        var user = await _userService.GetUserByIdAsync(recipe.CreatedById);
+        recipe.CreatedBy = user;
+
+        return recipe;
     }
 }

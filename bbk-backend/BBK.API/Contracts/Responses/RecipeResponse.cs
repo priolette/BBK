@@ -6,6 +6,7 @@ public record RecipeResponse
     public required string Title { get; init; }
     public required string Description { get; init; }
     public required string CreatedById { get; init; }
+    public UserResponse? CreatedBy { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? ModifiedAt { get; init; }
     public required List<RecipeIngredientResponse> Ingredients { get; init; } = [];

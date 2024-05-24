@@ -10,6 +10,7 @@ builder.AddConfiguration();
 builder.AddSerilog();
 builder.AddDatabase();
 builder.AddAuth();
+builder.AddAuth0ManagementApi();
 builder.AddApplicationServices();
 builder.AddOpenApi();
 
