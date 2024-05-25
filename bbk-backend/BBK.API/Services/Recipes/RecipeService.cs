@@ -1,4 +1,6 @@
-﻿using BBK.API.Data;
+﻿using BBK.API.Contracts.Requests;
+using BBK.API.Data;
+using BBK.API.Data.Models;
 using BBK.API.Models;
 using BBK.API.Services.Users;
 using Microsoft.EntityFrameworkCore;
@@ -7,10 +9,12 @@ namespace BBK.API.Services.Recipes;
 
 public class RecipeService(
     AppDbContext dbContext,
-    IUserService userService) : IRecipeService
+    IUserService userService,
+    ILogger<RecipeService> logger) : IRecipeService
 {
     private readonly AppDbContext _context = dbContext;
     private readonly IUserService _userService = userService;
+    private readonly ILogger<RecipeService> _logger = logger;
 
     public async Task<ListResult<ShortRecipeResult>> GetAllRecipesAsync(PaginationFilter? pagination)
     {
@@ -44,7 +48,7 @@ public class RecipeService(
             Total = total
         };
     }
-    
+
     public async Task<RecipeResult?> GetRecipeByIdAsync(int id)
     {
         // TODO: fix this
@@ -69,7 +73,7 @@ public class RecipeService(
                 Upvotes = r.Upvotes.ToList(),
                 Comments = r.Comments.ToList()
             })
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (recipe is null)
         {
@@ -80,5 +84,41 @@ public class RecipeService(
         recipe.CreatedBy = user;
 
         return recipe;
+    }
+
+    public async Task<RecipeResult?> CreateRecipeAsync(CreateRecipeRequest request, string userId)
+    {
+        var recipe = new Recipe
+        {
+            Title = request.Title,
+            Description = request.Description,
+            ImageUrl = request.ImageUrl,
+            CreatedById = userId,
+            CreatedAt = DateTimeOffset.UtcNow,
+            RecipeIngredients = request.Ingredients.Select(i => new RecipeIngredient
+            {
+                IngredientId = i.IngredientId,
+                UnitId = i.UnitId,
+                Amount = i.Amount
+            }).ToList(),
+            Steps = request.Steps.Select(s => new Step
+            {
+                Description = s.Description,
+                Order = s.Order
+            }).ToList()
+        };
+
+        try
+        {
+            _context.Recipes.Add(recipe);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create recipe");
+            return null;
+        }
+
+        return await GetRecipeByIdAsync(recipe.Id);
     }
 }

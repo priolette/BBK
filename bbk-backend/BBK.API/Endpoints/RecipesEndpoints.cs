@@ -1,5 +1,6 @@
 ﻿using BBK.API.Contracts.Requests;
 using BBK.API.Contracts.Responses;
+using BBK.API.Extensions;
 using BBK.API.Mappers;
 using BBK.API.Models;
 using BBK.API.Services.Recipes;
@@ -15,6 +16,7 @@ public static class RecipesEndpoints
 
         group.MapGet("/", GetAllRecipesAsync);
         group.MapGet("/{recipeId}", GetRecipeByIdAsync);
+        group.MapPost("/", CreateRecipeAsync).RequireAuthorization();
 
         group.WithTags("Recipes");
 
@@ -50,7 +52,7 @@ public static class RecipesEndpoints
     }
 
     /// <summary>
-    /// This endpoint return recipe by id
+    /// This endpoint returns a recipe by id
     /// </summary>
     /// <param name="recipeId"></param>
     /// <param name="recipeService"></param>
@@ -66,6 +68,33 @@ public static class RecipesEndpoints
         if (recipe is null)
         {
             return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(recipe.ToRecipeResponse());
+    }
+
+    /// <summary>
+    /// This endpoint creates a new recipe, as well as its ingredients and steps.
+    /// </summary>
+    /// <param name="recipeService"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    private static async Task<Results<Ok<RecipeResponse>, IResult>> CreateRecipeAsync(
+        CreateRecipeRequest request,
+        IRecipeService recipeService,
+        HttpContext context)
+    {
+        var userId = context.GetUserId();
+
+        var recipe = await recipeService.CreateRecipeAsync(request, userId);
+
+        if (recipe is null)
+        {
+            return TypedResults.BadRequest(new ErrorResponse
+            {
+                Code = "FailedToCreate",
+                Message = "Failed to create recipe."
+            });
         }
 
         return TypedResults.Ok(recipe.ToRecipeResponse());
