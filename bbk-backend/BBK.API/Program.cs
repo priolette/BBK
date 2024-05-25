@@ -26,11 +26,8 @@ app.UseExceptionHandler(builder =>
 
         if (exception is BadHttpRequestException)
         {
-            var badRequestResult = TypedResults.BadRequest(new ErrorResponse
-            {
-                Code = "BadRequest",
-                Message = "Invalid request body.",
-            });
+            var badRequestResult = TypedResults.BadRequest(
+                new ErrorResponse("BadRequest", "Invalid request body."));
 
             await badRequestResult.ExecuteAsync(context);
             return;

@@ -1,4 +1,5 @@
 ﻿
+using BBK.API.Contracts;
 using BBK.API.Contracts.Requests;
 using BBK.API.Contracts.Responses;
 using BBK.API.Mappers;
@@ -70,11 +71,8 @@ public static class IngredientsEndpoints
 
         if (ingredient is null)
         {
-            return TypedResults.BadRequest(new ErrorResponse
-            {
-                Code = "FailedToCreate",
-                Message = "Failed to create ingredient."
-            });
+            return TypedResults.BadRequest(
+                new ErrorResponse(ErrorCodes.FailedToCreate, "Failed to create ingredient."));
         }
 
         return TypedResults.Ok(ingredient.ToIngredientResponse());

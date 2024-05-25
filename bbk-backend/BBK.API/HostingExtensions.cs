@@ -2,7 +2,9 @@
 using BBK.API.Data;
 using BBK.API.Filters;
 using BBK.API.Services.Ingredients;
+using BBK.API.Services.RecipeIngredients;
 using BBK.API.Services.Recipes;
+using BBK.API.Services.Steps;
 using BBK.API.Services.Units;
 using BBK.API.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -78,7 +80,9 @@ public static class HostingExtensions
     {
         builder.Services.AddScoped<IRecipeService, RecipeService>();
         builder.Services.AddScoped<IIngredientService, IngredientService>();
+        builder.Services.AddScoped<IRecipeIngredientService, RecipeIngredientService>();
         builder.Services.AddScoped<IUnitService, UnitService>();
+        builder.Services.AddScoped<IStepService, StepService>();
         builder.Services.AddScoped<IUserService, UserService>();
     }
 
@@ -200,7 +204,7 @@ public static class HostingExtensions
 
     private static IConfigurationRoot GetConfiguration()
     {
-        var builder=  new ConfigurationBuilder()
+        var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables();

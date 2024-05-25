@@ -1,7 +1,10 @@
-﻿using BBK.API.Contracts.Requests;
+﻿using BBK.API.Contracts;
+using BBK.API.Contracts.Requests;
 using BBK.API.Data;
 using BBK.API.Data.Models;
 using BBK.API.Models;
+using BBK.API.Services.RecipeIngredients;
+using BBK.API.Services.Steps;
 using BBK.API.Services.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +13,14 @@ namespace BBK.API.Services.Recipes;
 public class RecipeService(
     AppDbContext dbContext,
     IUserService userService,
+    IRecipeIngredientService recipeIngredientService,
+    IStepService stepService,
     ILogger<RecipeService> logger) : IRecipeService
 {
     private readonly AppDbContext _context = dbContext;
     private readonly IUserService _userService = userService;
+    private readonly IRecipeIngredientService _recipeIngredientService = recipeIngredientService;
+    private readonly IStepService _stepService = stepService;
     private readonly ILogger<RecipeService> _logger = logger;
 
     public async Task<ListResult<ShortRecipeResult>> GetAllRecipesAsync(PaginationFilter? pagination)
@@ -86,7 +93,7 @@ public class RecipeService(
         return recipe;
     }
 
-    public async Task<RecipeResult?> CreateRecipeAsync(CreateRecipeRequest request, string userId)
+    public async Task<CreateUpdateRecipeResult> CreateRecipeAsync(CreateRecipeRequest request, string userId)
     {
         var recipe = new Recipe
         {
@@ -116,9 +123,105 @@ public class RecipeService(
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create recipe");
-            return null;
+
+            return new CreateUpdateRecipeResult
+            {
+                Error = new ErrorResult(ErrorCodes.FailedToCreate, "Failed to create recipe")
+            };
         }
 
-        return await GetRecipeByIdAsync(recipe.Id);
+        return new CreateUpdateRecipeResult
+        {
+            Recipe = await GetRecipeByIdAsync(recipe.Id)
+        };
+    }
+
+    public async Task<CreateUpdateRecipeResult> UpdateRecipeAsync(UpdateRecipeRequest request, string userId)
+    {
+        var recipe = await _context.Recipes
+            .Include(r => r.RecipeIngredients)
+            .Include(r => r.Steps)
+            .FirstOrDefaultAsync(r => r.Id == request.Id && r.CreatedById == userId);
+
+        if (recipe is null)
+        {
+            return new CreateUpdateRecipeResult
+            {
+                Error = new ErrorResult(ErrorCodes.NotFound, "Recipe not found")
+            };
+        }
+
+        using var transaction = _context.Database.BeginTransaction();
+
+        recipe.Title = request.Title ?? recipe.Title;
+        recipe.Description = request.Description ?? recipe.Description;
+        recipe.ImageUrl = request.ImageUrl ?? recipe.ImageUrl;
+        recipe.ModifiedAt = DateTimeOffset.UtcNow;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            transaction.Rollback();
+            _logger.LogError(ex, "Failed to update recipe");
+            throw;
+        }
+
+        if (request.Ingredients is not null)
+        {
+            try
+            {
+                await _recipeIngredientService.UpdateRecipeIngredientsAsync(recipe.Id, [.. request.Ingredients], [.. recipe.RecipeIngredients]);
+            }
+            catch (InvalidOperationException ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Failed to update recipe ingredients");
+
+                return new CreateUpdateRecipeResult
+                {
+                    Error = new ErrorResult(ErrorCodes.BadRequest, ex.Message)
+                };
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Failed to update recipe ingredients");
+                throw;
+            }
+        }
+
+        if (request.Steps is not null)
+        {
+            try
+            {
+                await _stepService.UpdateStepsAsync(recipe.Id, [.. request.Steps], [.. recipe.Steps]);
+            }
+            catch (InvalidOperationException ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Failed to update recipe steps");
+
+                return new CreateUpdateRecipeResult
+                {
+                    Error = new ErrorResult(ErrorCodes.BadRequest, ex.Message)
+                };
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Failed to update recipe steps");
+                throw;
+            }
+        }
+
+        transaction.Commit();
+
+        return new CreateUpdateRecipeResult
+        {
+            Recipe = await GetRecipeByIdAsync(recipe.Id)
+        };
     }
 }
