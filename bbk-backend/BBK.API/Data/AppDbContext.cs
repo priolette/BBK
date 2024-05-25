@@ -73,6 +73,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasMaxLength(255)
                 .IsRequired();
 
+            entity.HasIndex(e => e.Name)
+                .IsUnique();
+
             entity.Property(e => e.Description)
                 .HasMaxLength(1024);
         });
@@ -89,7 +92,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasForeignKey(e => e.RecipeId);
 
             entity.HasOne(e => e.Ingredient)
-                .WithMany(e => e.IngredientAmounts)
+                .WithMany(e => e.RecipeIngredients)
                 .HasForeignKey(e => e.IngredientId);
 
             entity.HasOne(e => e.Unit)

@@ -5,5 +5,5 @@ public class Ingredient
     public required string Name { get; set; }
     public string? Description { get; set; }
 
-    public virtual ICollection<RecipeIngredient> IngredientAmounts { get; set; } = default!;
+    public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = default!;
 }
