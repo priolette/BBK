@@ -40,7 +40,8 @@ public static class SeedData
                 Id = 1,
                 Title = "Pumpkin Bread",
                 Description = "A delicious, moist pumpkin bread with a hint of spice.",
-                CreatedById = "TestUser1",
+                ImageUrl = "https://www.onceuponachef.com/images/2009/09/Pumpkin-Bread-100.jpg",
+                CreatedById = "google-oauth2|103919914105442701060",
                 CreatedAt = DateTimeOffset.Now
             },
             new Recipe
@@ -48,7 +49,8 @@ public static class SeedData
                 Id = 2,
                 Title = "Pumpkin Pie",
                 Description = "A classic pumpkin pie with a flaky crust and creamy filling.",
-                CreatedById = "TestUser2",
+                ImageUrl = "https://www.allrecipes.com/thmb/CQrgVw7qjs2QQfKqy0GMerfppsM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/229932-Simple-Pumpkin-Pie-vat-hero-4x3-LSH-ae211272471a4e7aa9f10716cdcf4bc3.jpg",
+                CreatedById = "auth0|662e3bad87766e08b83e46a0",
                 CreatedAt = DateTimeOffset.Now
             }
         );
@@ -111,7 +113,7 @@ public static class SeedData
                 RecipeId = 1,
                 Text = "This pumpkin bread is delicious! I added some chocolate chips for extra sweetness.",
                 CreatedAt = DateTimeOffset.UtcNow,
-                CreatedById = "TestUser3"
+                CreatedById = "google-oauth2|103919914105442701060"
             },
             new Comment
             {
@@ -119,7 +121,7 @@ public static class SeedData
                 RecipeId = 1,
                 Text = "I made this for Thanksgiving and it was a hit with my family. Will definitely make again!",
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-2),
-                CreatedById = "TestUser4"
+                CreatedById = "auth0|662e3bad87766e08b83e46a0"
             },
             new Comment
             {
@@ -127,7 +129,7 @@ public static class SeedData
                 RecipeId = 2,
                 Text = "The pumpkin pie turned out perfectly. I used a store-bought crust to save time.",
                 CreatedAt = DateTimeOffset.UtcNow.AddHours(-14),
-                CreatedById = "TestUser5"
+                CreatedById = "google-oauth2|103919914105442701060"
             },
             new Comment
             {
@@ -135,15 +137,15 @@ public static class SeedData
                 RecipeId = 2,
                 Text = "I love pumpkin pie and this recipe did not disappoint. The spices were just right!",
                 CreatedAt = DateTimeOffset.UtcNow.AddMinutes(-5),
-                CreatedById = "TestUser6"
+                CreatedById = "auth0|662e3bad87766e08b83e46a0"
             }
         );
 
         modelBuilder.Entity<Upvote>().HasData(
-            new Upvote { RecipeId = 1, CreatedById = "TestUser1" },
-            new Upvote { RecipeId = 1, CreatedById = "TestUser2" },
-            new Upvote { RecipeId = 2, CreatedById = "TestUser1" },
-            new Upvote { RecipeId = 2, CreatedById = "TestUser2" },
+            new Upvote { RecipeId = 1, CreatedById = "google-oauth2|103919914105442701060" },
+            new Upvote { RecipeId = 1, CreatedById = "auth0|662e3bad87766e08b83e46a0" },
+            new Upvote { RecipeId = 2, CreatedById = "google-oauth2|103919914105442701060" },
+            new Upvote { RecipeId = 2, CreatedById = "auth0|662e3bad87766e08b83e46a0" },
             new Upvote { RecipeId = 2, CreatedById = "TestUser3" },
             new Upvote { RecipeId = 2, CreatedById = "TestUser4" }
         );

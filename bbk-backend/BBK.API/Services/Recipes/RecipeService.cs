@@ -54,6 +54,7 @@ public class RecipeService(
                 Id = r.Id,
                 Title = r.Title,
                 Description = r.Description,
+                ImageUrl = r.ImageUrl,
                 CreatedById = r.CreatedById,
                 CreatedAt = r.CreatedAt,
                 ModifiedAt = r.ModifiedAt,
