@@ -40,6 +40,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasMaxLength(1024)
                 .IsRequired();
 
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(2048);
+
             entity.Property(e => e.CreatedById)
                 .HasMaxLength(255)
                 .IsRequired();

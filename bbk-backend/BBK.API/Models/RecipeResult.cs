@@ -7,6 +7,7 @@ public class RecipeResult
     public int Id { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
+    public string? ImageUrl { get; set; }
     public required string CreatedById { get; set; }
     public AuthUser? CreatedBy { get; set; }
     public required DateTimeOffset CreatedAt { get; set; }
