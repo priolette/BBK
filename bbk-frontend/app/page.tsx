@@ -8,30 +8,30 @@ import {
 } from "@/components/ui/card";
 import { Recipe } from "@/types/Recipe";
 import Image from "next/image";
+import { dummyImage } from "@/data/recipes";
 import Link from "next/link";
+import { getAllRecipes } from "@/lib/server/recipes";
+import { RecipePagination } from "@/components/recipe-pagination";
+import { notFound } from "next/navigation";
 
-async function getRecipes() {
-  const getRecipesPath = process.env.API_PATH + "recipes";
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: { page?: number };
+}) {
+  const perPage = 9;
+  const currentPage = searchParams?.page || 1;
+  const res = await getAllRecipes(currentPage, perPage);
 
-  const res = await fetch(getRecipesPath);
-  if (!res.ok) {
-    //what solution for errors ? Message component or some kind of notification
-    throw new Error("Failed to fetch data");
+  if (res.data.length === 0 && currentPage > 1) {
+    notFound();
   }
 
-  return res.json();
-}
-
-export default async function Home() {
-  const dummyImage =
-    "https://handletheheat.com/wp-content/uploads/2017/03/Chewy-Brownies-Square-1.jpg";
-  const dummyAuthor = "Comming soon";
-  const recipes = await getRecipes();
   return (
-    <main className="flex flex-auto gap-4 p-4">
-      {recipes.data.map((recipe: Recipe) => (
+    <div className="flex flex-wrap gap-4 p-4">
+      {res.data.map((recipe) => (
         <Link href={`/${recipe.id}`} key={recipe.id}>
-          <Card key={recipe.id} className="">
+          <Card className="w-[400px]">
             <CardHeader>
               <CardTitle>{recipe.title}</CardTitle>
               <CardDescription>{recipe.description}</CardDescription>
@@ -39,19 +39,25 @@ export default async function Home() {
             <CardContent className="px-0">
               <Image
                 src={dummyImage}
-                alt={recipe.title}
-                width={0}
-                height={0}
-                sizes="100vw"
-                className="h-48 w-full"
+                alt={`${recipe.title} image`}
+                height={100}
+                width={150}
+                className="w-full"
               />
             </CardContent>
             <CardFooter>
-              <CardDescription>Created by: {dummyAuthor}</CardDescription>
+              <CardDescription>
+                Created by: {recipe.createdById}
+              </CardDescription>
             </CardFooter>
           </Card>
         </Link>
       ))}
-    </main>
+      <RecipePagination
+        itemCount={res.totalRecords || 1}
+        pageSize={perPage}
+        currentPage={currentPage}
+      />
+    </div>
   );
 }
