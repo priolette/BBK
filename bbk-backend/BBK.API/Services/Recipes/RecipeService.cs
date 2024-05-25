@@ -136,12 +136,12 @@ public class RecipeService(
         };
     }
 
-    public async Task<CreateUpdateRecipeResult> UpdateRecipeAsync(UpdateRecipeRequest request, string userId)
+    public async Task<CreateUpdateRecipeResult> UpdateRecipeAsync(int recipeId, UpdateRecipeRequest request, string userId)
     {
         var recipe = await _context.Recipes
             .Include(r => r.RecipeIngredients)
             .Include(r => r.Steps)
-            .FirstOrDefaultAsync(r => r.Id == request.Id && r.CreatedById == userId);
+            .FirstOrDefaultAsync(r => r.Id == recipeId && r.CreatedById == userId);
 
         if (recipe is null)
         {
@@ -223,5 +223,21 @@ public class RecipeService(
         {
             Recipe = await GetRecipeByIdAsync(recipe.Id)
         };
+    }
+
+    public async Task<ErrorResult?> DeleteRecipeAsync(int recipeId, string userId)
+    {
+        var recipe = await _context.Recipes
+            .FirstOrDefaultAsync(r => r.Id == recipeId && r.CreatedById == userId);
+
+        if (recipe is null)
+        {
+            return new ErrorResult(ErrorCodes.NotFound, "Recipe not found");
+        }
+
+        _context.Recipes.Remove(recipe);
+        await _context.SaveChangesAsync();
+
+        return null;
     }
 }

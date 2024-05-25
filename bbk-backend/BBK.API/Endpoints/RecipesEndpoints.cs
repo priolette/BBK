@@ -19,6 +19,7 @@ public static class RecipesEndpoints
         group.MapGet("/{recipeId}", GetRecipeByIdAsync);
         group.MapPost("/", CreateRecipeAsync).RequireAuthorization();
         group.MapPut("/{recipeId}", UpdateRecipeAsync).RequireAuthorization();
+        group.MapDelete("/{recipeId}", DeleteRecipeAsync).RequireAuthorization();
 
         group.WithTags("Recipes");
 
@@ -102,18 +103,20 @@ public static class RecipesEndpoints
     /// <summary>
     /// This endpoint updates a recipe, as well as its ingredients and steps (if provided).
     /// </summary>
+    /// <param name="recipeId"></param>
     /// <param name="request"></param>
     /// <param name="recipeService"></param>
     /// <param name="context"></param>
     /// <returns></returns>
     private static async Task<Results<Ok<RecipeResponse>, IResult>> UpdateRecipeAsync(
+        int recipeId,
         UpdateRecipeRequest request,
         IRecipeService recipeService,
         HttpContext context)
     {
         var userId = context.GetUserId();
 
-        var result = await recipeService.UpdateRecipeAsync(request, userId);
+        var result = await recipeService.UpdateRecipeAsync(recipeId, request, userId);
 
         if (result.Error is not null)
         {
@@ -126,5 +129,29 @@ public static class RecipesEndpoints
         }
 
         return TypedResults.Ok(result.Recipe!.ToRecipeResponse());
+    }
+
+    /// <summary>
+    /// This endpoints deletes a user's recipe by id.
+    /// </summary>
+    /// <param name="recipeId"></param>
+    /// <param name="recipeService"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    private static async Task<Results<Ok, IResult>> DeleteRecipeAsync(
+        int recipeId,
+        IRecipeService recipeService,
+        HttpContext context)
+    {
+        var userId = context.GetUserId();
+
+        var error = await recipeService.DeleteRecipeAsync(recipeId, userId);
+
+        if (error is not null)
+        {
+            return TypedResults.NotFound(new ErrorResponse(error));
+        }
+
+        return TypedResults.Ok();
     }
 }
