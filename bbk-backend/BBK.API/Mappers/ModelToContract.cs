@@ -5,20 +5,6 @@ namespace BBK.API.Mappers;
 
 public static class ModelToContract
 {
-    public static ShortRecipeResponse ToShortRecipeResponse(this Recipe model)
-    {
-        return new ShortRecipeResponse
-        {
-            Id = model.Id,
-            Title = model.Title,
-            Description = model.Description,
-            CreatedById = model.CreatedById,
-            CreatedAt = model.CreatedAt,
-            ModifiedAt = model.ModifiedAt,
-            Upvotes = model.Upvotes.Count,
-        };
-    }
-
     public static CommentResponse ToCommentResponse(this Comment model)
     {
         return new CommentResponse

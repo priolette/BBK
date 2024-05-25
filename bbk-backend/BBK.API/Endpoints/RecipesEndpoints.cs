@@ -14,13 +14,9 @@ public static class RecipesEndpoints
         var group = app.MapGroup("/recipes");
 
         group.MapGet("/", GetAllRecipesAsync);
-
         group.MapGet("/{recipeId}", GetRecipeByIdAsync);
 
         group.WithTags("Recipes");
-
-        // TODO
-        //group.RequireAuthorization();
 
         group.WithOpenApi();
 

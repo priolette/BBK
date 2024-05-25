@@ -1,6 +1,8 @@
-﻿using BBK.API.Data;
+﻿using Auth0Net.DependencyInjection;
+using BBK.API.Data;
 using BBK.API.Filters;
 using BBK.API.Services.Recipes;
+using BBK.API.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -55,9 +57,25 @@ public static class HostingExtensions
             .AddPolicy("Administration", policy => policy.RequireClaim("permissions", "administration"));
     }
 
+    public static void AddAuth0ManagementApi(this WebApplicationBuilder builder)
+    {
+        var identitySection = builder.Configuration.GetSection("Identity");
+
+        builder.Services.AddAuth0AuthenticationClient(options =>
+        {
+            options.ClientId = identitySection.GetRequiredValue("M2MClient:Id");
+            options.ClientSecret = identitySection.GetRequiredValue("M2MClient:Secret");
+            options.Domain = builder.Configuration.GetRequiredValue("Identity:Url");
+        });
+
+        builder.Services.AddAuth0ManagementClient()
+            .AddManagementAccessToken();
+    }
+
     public static void AddApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IRecipeService, RecipeService>();
+        builder.Services.AddScoped<IUserService, UserService>();
     }
 
     public static void AddOpenApi(this WebApplicationBuilder builder)
