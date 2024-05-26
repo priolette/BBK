@@ -50,6 +50,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql(UtcNow)
                 .IsRequired();
+
+            entity.Property(e => e.ConcurrecyToken)
+                .IsRowVersion();
         });
 
         modelBuilder.Entity<Step>(entity =>
@@ -63,6 +66,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasOne(e => e.Recipe)
                 .WithMany(e => e.Steps)
                 .HasForeignKey(e => e.RecipeId);
+
+            entity.Property(e => e.ConcurrecyToken)
+                .IsRowVersion();
         });
 
         modelBuilder.Entity<Ingredient>(entity =>
@@ -78,6 +84,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
             entity.Property(e => e.Description)
                 .HasMaxLength(1024);
+
+            entity.Property(e => e.ConcurrecyToken)
+                .IsRowVersion();
         });
 
         modelBuilder.Entity<RecipeIngredient>(entity =>
@@ -98,6 +107,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasOne(e => e.Unit)
                 .WithMany(e => e.IngredientAmounts)
                 .HasForeignKey(e => e.UnitId);
+
+            entity.Property(e => e.ConcurrecyToken)
+                .IsRowVersion();
         });
 
         modelBuilder.Entity<Unit>(entity =>
@@ -111,6 +123,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(e => e.Code)
                 .HasMaxLength(32)
                 .IsRequired();
+
+            entity.Property(e => e.ConcurrecyToken)
+                .IsRowVersion();
         });
 
         modelBuilder.Entity<Upvote>(entity =>
@@ -122,6 +137,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasOne(e => e.Recipe)
                 .WithMany(e => e.Upvotes)
                 .HasForeignKey(e => e.RecipeId);
+
+            entity.Property(e => e.ConcurrecyToken)
+                .IsRowVersion();
         });
 
         modelBuilder.Entity<Comment>(entity =>
@@ -147,6 +165,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasOne(e => e.Recipe)
                 .WithMany(e => e.Comments)
                 .HasForeignKey(e => e.RecipeId);
+
+            entity.Property(e => e.ConcurrecyToken)
+                .IsRowVersion();
         });
     }
 }
