@@ -1,13 +1,13 @@
 ﻿using BBK.API.Contracts.Requests;
-using BBK.API.Data;
 using BBK.API.Data.Models;
+using BBK.API.Repositories.Steps;
 
 namespace BBK.API.Services.Steps;
 
-public class StepService(AppDbContext dbContext, ILogger<StepService> logger) : IStepService
+public class StepService(
+    IStepsRepository repository) : IStepService
 {
-    private readonly AppDbContext _context = dbContext;
-    private readonly ILogger<StepService> _logger = logger;
+    private readonly IStepsRepository _repository = repository;
 
     public async Task<List<Step>> UpdateStepsAsync(int recipeId, List<UpdateStepRequest> requestSteps, List<Step> dbSteps)
     {
@@ -18,7 +18,8 @@ public class StepService(AppDbContext dbContext, ILogger<StepService> logger) : 
                 RecipeId = recipeId,
                 Description = request.Description ?? throw new InvalidOperationException("Step description is required"),
                 Order = request.Order ?? throw new InvalidOperationException("Step order is required")
-            });
+            })
+            .ToList();
 
         var stepsToDelete = dbSteps
             .Where(s => !requestSteps.Any(request => request.Id == s.Id))
@@ -36,11 +37,9 @@ public class StepService(AppDbContext dbContext, ILogger<StepService> logger) : 
             step.Order = request.Order ?? step.Order;
         }
 
-        _context.Steps.AddRange(stepsToAdd);
-        _context.Steps.RemoveRange(stepsToDelete);
-        _context.Steps.UpdateRange(stepsToUpdate);
-
-        await _context.SaveChangesAsync();
+        await _repository.AddRangeAsync(stepsToAdd);
+        await _repository.UpdateRangeAsync(stepsToUpdate);
+        await _repository.RemoveRangeAsync(stepsToDelete);
 
         return [.. stepsToUpdate, .. stepsToAdd];
     }

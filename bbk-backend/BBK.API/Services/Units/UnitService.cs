@@ -1,17 +1,14 @@
-﻿using BBK.API.Data;
-using BBK.API.Data.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using BBK.API.Data.Models;
+using BBK.API.Repositories.Units;
 
 namespace BBK.API.Services.Units;
 
-public class UnitService(AppDbContext context) : IUnitService
+public class UnitService(IUnitsRepository repository) : IUnitService
 {
-    private readonly AppDbContext _context = context;
+    private readonly IUnitsRepository _repository = repository;
 
     public Task<List<Unit>> GetAllUnitsAsync()
     {
-        return _context.Units
-            .OrderBy(u => u.Name)
-            .ToListAsync();
+        return _repository.GetAllAsync();
     }
 }

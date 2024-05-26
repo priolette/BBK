@@ -1,19 +1,16 @@
-﻿using BBK.API.Data;
-using BBK.API.Data.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using BBK.API.Data.Models;
+using BBK.API.Repositories.Upvotes;
 
 namespace BBK.API.Services.Upvotes;
 
-public class UpvoteService(AppDbContext context) : IUpvoteService
+public class UpvoteService(IUpvotesRepository repository) : IUpvoteService
 {
-    private readonly AppDbContext _context = context;
+    private readonly IUpvotesRepository _repository = repository;
 
     public async Task<bool> CreateOrDeleteAsync(int recipeId, string userId)
     {
-        var existingUpvote = await _context.Upvotes
-            .FirstOrDefaultAsync(x => x.RecipeId == recipeId && x.CreatedById == userId);
+        var existingUpvote = await _repository.GetByUserAndRecipeIdAsync(userId, recipeId);
 
-        bool isUpvoted;
         if (existingUpvote is null)
         {
             var upvote = new Upvote
@@ -22,17 +19,11 @@ public class UpvoteService(AppDbContext context) : IUpvoteService
                 CreatedById = userId
             };
 
-            _context.Upvotes.Add(upvote);
-            isUpvoted = true;
-        }
-        else
-        {
-            _context.Upvotes.Remove(existingUpvote);
-            isUpvoted = false;
+            await _repository.CreateAsync(upvote);
+            return true;
         }
 
-        await _context.SaveChangesAsync();
-
-        return isUpvoted;
+        await _repository.DeleteAsync(existingUpvote);
+        return false;
     }
 }
