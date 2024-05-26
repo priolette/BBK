@@ -15,7 +15,7 @@ public class RecipeResult
     public List<Step> Steps { get; set; } = [];
     public List<RecipeIngredientResult> RecipeIngredients { get; set; } = [];
     public List<Upvote> Upvotes { get; set; } = [];
-    public List<Comment> Comments { get; set; } = [];
+    public List<CommentResult> Comments { get; set; } = [];
 }
 
 public class RecipeIngredientResult
