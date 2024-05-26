@@ -8,6 +8,7 @@ using BBK.API.Services.Recipes;
 using BBK.API.Services.Steps;
 using BBK.API.Services.Units;
 using BBK.API.Services.Upvotes;
+using BBK.API.Services.UserRecipes;
 using BBK.API.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -81,6 +82,7 @@ public static class HostingExtensions
     public static void AddApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IRecipeService, RecipeService>();
+        builder.Services.AddScoped<IUserRecipeService, UserRecipeService>();
         builder.Services.AddScoped<IIngredientService, IngredientService>();
         builder.Services.AddScoped<IRecipeIngredientService, RecipeIngredientService>();
         builder.Services.AddScoped<IUnitService, UnitService>();
