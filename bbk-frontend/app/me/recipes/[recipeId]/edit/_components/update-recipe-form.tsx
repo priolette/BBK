@@ -8,7 +8,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { IngredientResponse, UnitResponse } from "@/lib/server/recipes";
+import {
+  IngredientResponse,
+  RecipeResponse,
+  UnitResponse,
+} from "@/lib/server/recipes";
 import { useFieldArray, useForm } from "react-hook-form";
 import { CreateIngredientSchema, CreateRecipeSchema } from "@/lib/formSchemas";
 import { z } from "zod";
@@ -32,25 +36,33 @@ import {
 } from "@/components/ui/command";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash } from "lucide-react";
-import { useState } from "react";
 import Link from "next/link";
-import { createRecipe } from "@/app/create/actions";
+import { updateRecipe } from "@/app/create/actions";
 
-export function CreateRecipeForm({
+export function UpdateRecipeForm({
+  recipe,
   ingredients,
   units,
 }: {
+  recipe: RecipeResponse;
   ingredients: IngredientResponse[];
   units: UnitResponse[];
 }) {
   const recipeForm = useForm<z.infer<typeof CreateRecipeSchema>>({
     resolver: zodResolver(CreateRecipeSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      imageUrl: "",
-      ingredients: [],
-      steps: [],
+      title: recipe.title,
+      description: recipe.description,
+      imageUrl: recipe.imageUrl,
+      ingredients: recipe.ingredients.map((i) => ({
+        amount: i.amount,
+        ingredientId: i.ingredient.id,
+        unitId: i.unit.id,
+      })),
+      steps: recipe.steps.map((s) => ({
+        description: s.description,
+        order: s.order,
+      })),
     },
   });
   const {
@@ -71,7 +83,7 @@ export function CreateRecipeForm({
   });
 
   const onRecipeSubmit = async (values: z.infer<typeof CreateRecipeSchema>) => {
-    await createRecipe(values);
+    await updateRecipe(values, recipe.id);
   };
 
   return (
