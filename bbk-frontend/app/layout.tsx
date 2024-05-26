@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { LoginButton } from "@/components/login-button";
+import { AddRecipeButton } from "@/components/add-recipe-button";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -37,7 +38,7 @@ export default function RootLayout({
           >
             <div className="grid h-screen grid-rows-[auto,1fr]">
               <NavBar />
-              <main className="overflow-y-scroll">{children}</main>
+              <main className="overflow-y-auto">{children}</main>
             </div>
           </ThemeProvider>
         </body>
@@ -49,9 +50,10 @@ export default function RootLayout({
 function NavBar() {
   return (
     <header className="flex w-full flex-row items-center gap-4 border-b p-4 text-xl font-semibold">
-      <nav className="ml-auto flex w-full items-center">
+      <nav className="flex w-full items-center">
         <Link href={"/"}>Recipes</Link>
       </nav>
+      <AddRecipeButton />
       <ThemeToggle />
       <LoginButton />
     </header>

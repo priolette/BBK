@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Recipe } from "@/types/Recipe";
 import Image from "next/image";
 import { dummyImage } from "@/data/recipes";
 import Link from "next/link";
@@ -47,7 +46,7 @@ export default async function Home({
             </CardContent>
             <CardFooter>
               <CardDescription>
-                Created by: {recipe.createdById}
+                Created by: {recipe.createdBy?.fullName || "Unknown"}
               </CardDescription>
             </CardFooter>
           </Card>
