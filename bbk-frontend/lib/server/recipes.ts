@@ -1,4 +1,5 @@
 import { UserResponse } from "@/lib/server/user";
+import { getAccessToken } from "@auth0/nextjs-auth0";
 import "server-only";
 
 export type ShortRecipePagedResponse = {
@@ -14,17 +15,20 @@ export type ShortRecipeResponse = {
   id: number;
   title: string;
   description: string;
+  imageUrl?: string;
   createdById: string;
   createdBy?: UserResponse;
   createdAt: string;
   modifiedAt?: string;
   upvotes: number;
+  isUpvoted?: boolean;
 };
 
 export type RecipeResponse = {
   id: number;
   title: string;
   description: string;
+  imageUrl?: string;
   createdById: string;
   createdBy?: UserResponse;
   createdAt: string;
@@ -32,6 +36,7 @@ export type RecipeResponse = {
   ingredients: RecipeIngredientResponse[];
   steps: StepResponse[];
   upvotes: number;
+  isUpvoted?: boolean;
   comments: CommentResponse[];
 };
 
@@ -91,9 +96,19 @@ export async function getAllRecipes(
   currentPage: number,
   pageSize: number,
 ): Promise<ShortRecipePagedResponse> {
+  let token;
+  try {
+    token = await getAccessToken();
+  } catch (error) {}
+
   try {
     const response = await fetch(
       `${process.env.API_PATH}recipes?PageNumber=${currentPage}&PageSize=${pageSize}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token?.accessToken}`,
+        },
+      },
     );
 
     return response.json();
@@ -109,8 +124,21 @@ export async function getAllRecipes(
 }
 
 export async function getRecipe(id: number): Promise<RecipeResponse | null> {
+  let token;
   try {
-    const response = await fetch(`${process.env.API_PATH}recipes/${id}`);
+    token = await getAccessToken();
+  } catch (error) {}
+
+  try {
+    const response = await fetch(`${process.env.API_PATH}recipes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token?.accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
 
     return response.json();
   } catch (error) {

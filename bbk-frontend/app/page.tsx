@@ -12,6 +12,10 @@ import Link from "next/link";
 import { getAllRecipes } from "@/lib/server/recipes";
 import { RecipePagination } from "@/components/recipe-pagination";
 import { notFound } from "next/navigation";
+import { LikeButton } from "@/components/like-button";
+import { Pizza } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home({
   searchParams,
@@ -29,28 +33,37 @@ export default async function Home({
   return (
     <div className="flex flex-wrap gap-4 p-4">
       {res.data.map((recipe) => (
-        <Link href={`/${recipe.id}`} key={recipe.id}>
-          <Card className="w-[400px]">
+        <Card key={recipe.id} className="flex w-[400px] flex-col">
+          <Link href={`/${recipe.id}`} key={recipe.id}>
             <CardHeader>
               <CardTitle>{recipe.title}</CardTitle>
               <CardDescription>{recipe.description}</CardDescription>
             </CardHeader>
             <CardContent className="px-0">
-              <Image
-                src={dummyImage}
-                alt={`${recipe.title} image`}
-                height={100}
-                width={150}
-                className="w-full"
-              />
+              {!!recipe.imageUrl ? (
+                <Image
+                  src={recipe.imageUrl ?? ""}
+                  alt={recipe.title}
+                  className="w-full"
+                  width={150}
+                  height={100}
+                />
+              ) : (
+                <Pizza className="h-24 w-24" />
+              )}
             </CardContent>
-            <CardFooter>
-              <CardDescription>
-                Created by: {recipe.createdBy?.fullName || "Unknown"}
-              </CardDescription>
-            </CardFooter>
-          </Card>
-        </Link>
+          </Link>
+          <CardFooter className="flex h-full justify-between">
+            <CardDescription>
+              Created by: {recipe.createdBy?.fullName || "Unknown"}
+            </CardDescription>
+            <LikeButton
+              recipeId={recipe.id}
+              initialLikes={recipe.upvotes}
+              isLiked={recipe.isUpvoted || false}
+            />
+          </CardFooter>
+        </Card>
       ))}
       <RecipePagination
         itemCount={res.totalRecords || 1}

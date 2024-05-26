@@ -267,7 +267,7 @@ export function CreateRecipeForm({
               })
             }
             type="button"
-            className="w-40 gap-2"
+            className="max-w-min gap-2"
           >
             <Plus />
             Add Ingredient
@@ -313,7 +313,7 @@ export function CreateRecipeForm({
               })
             }
             type="button"
-            className="w-40 gap-2"
+            className="max-w-min gap-2"
           >
             <Plus />
             Add Step

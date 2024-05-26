@@ -1,6 +1,7 @@
+import { LikeButton } from "@/components/like-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getRecipe } from "@/lib/server/recipes";
-import { User } from "lucide-react";
+import { Pizza, User } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -10,8 +11,6 @@ export default async function Page({
   params: { recipeId: number };
 }) {
   const recipeData = await getRecipe(params.recipeId);
-  const dummyImage =
-    "https://handletheheat.com/wp-content/uploads/2017/03/Chewy-Brownies-Square-1.jpg";
 
   if (!recipeData) {
     notFound();
@@ -21,14 +20,26 @@ export default async function Page({
     <div className="grid flex-1 gap-4 p-4 sm:grid-cols-2">
       <div className="flex justify-center">
         <aside className="flex flex-col items-center gap-4 sm:items-start">
-          <h1 className="mb-4 text-3xl font-bold">{recipeData.title}</h1>
-          <Image
-            src={dummyImage}
-            alt={recipeData.title}
-            className="mb-4 w-96 rounded-lg"
-            width={150}
-            height={100}
-          />
+          <div className="flex gap-2">
+            <h1 className="gap-2 text-3xl font-bold">{recipeData.title}</h1>
+            <LikeButton
+              recipeId={recipeData.id}
+              initialLikes={recipeData.upvotes}
+              isLiked={recipeData.isUpvoted ?? false}
+            />
+          </div>
+
+          {!!recipeData.imageUrl ? (
+            <Image
+              src={recipeData.imageUrl ?? ""}
+              alt={recipeData.title}
+              className="w-96 rounded-lg pb-4"
+              width={150}
+              height={100}
+            />
+          ) : (
+            <Pizza className="h-24 w-24" />
+          )}
           <p className="text-lg">{recipeData.description}</p>
           <span className="flex items-center gap-2">
             Created by:{" "}
@@ -51,7 +62,7 @@ export default async function Page({
           </span>
         </aside>
       </div>
-      <div className="mx-4 flex h-full flex-col">
+      <div className="flex h-full flex-col sm:pt-12">
         {/* Ingredients */}
         <div className="flex flex-col items-start">
           <h2 className="mb-2 text-2xl font-semibold">Ingredients:</h2>
@@ -80,7 +91,7 @@ export default async function Page({
       <div className="col-span-full flex justify-center">
         <div className="justify-start">
           <h2 className="item-start my-4 text-2xl font-semibold">Comments:</h2>
-          {!!recipeData.comments && (
+          {!recipeData.comments && (
             <div>
               <span>There are currently no comments for this recipe</span>
             </div>
