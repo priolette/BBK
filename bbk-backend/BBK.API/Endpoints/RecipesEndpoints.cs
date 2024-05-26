@@ -1,4 +1,5 @@
-﻿using BBK.API.Contracts.Requests;
+﻿using BBK.API.Contracts;
+using BBK.API.Contracts.Requests;
 using BBK.API.Contracts.Responses;
 using BBK.API.Extensions;
 using BBK.API.Mappers;
@@ -17,6 +18,8 @@ public static class RecipesEndpoints
         group.MapGet("/", GetAllRecipesAsync);
         group.MapGet("/{recipeId}", GetRecipeByIdAsync);
         group.MapPost("/", CreateRecipeAsync).RequireAuthorization();
+        group.MapPut("/{recipeId}", UpdateRecipeAsync).RequireAuthorization();
+        group.MapDelete("/{recipeId}", DeleteRecipeAsync).RequireAuthorization();
 
         group.WithTags("Recipes");
 
@@ -87,17 +90,68 @@ public static class RecipesEndpoints
     {
         var userId = context.GetUserId();
 
-        var recipe = await recipeService.CreateRecipeAsync(request, userId);
+        var result = await recipeService.CreateRecipeAsync(request, userId);
 
-        if (recipe is null)
+        if (result.Error is not null)
         {
-            return TypedResults.BadRequest(new ErrorResponse
-            {
-                Code = "FailedToCreate",
-                Message = "Failed to create recipe."
-            });
+            return TypedResults.BadRequest(new ErrorResponse(result.Error));
         }
 
-        return TypedResults.Ok(recipe.ToRecipeResponse());
+        return TypedResults.Ok(result.Recipe!.ToRecipeResponse());
+    }
+
+    /// <summary>
+    /// This endpoint updates a recipe, as well as its ingredients and steps (if provided).
+    /// </summary>
+    /// <param name="recipeId"></param>
+    /// <param name="request"></param>
+    /// <param name="recipeService"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    private static async Task<Results<Ok<RecipeResponse>, IResult>> UpdateRecipeAsync(
+        int recipeId,
+        UpdateRecipeRequest request,
+        IRecipeService recipeService,
+        HttpContext context)
+    {
+        var userId = context.GetUserId();
+
+        var result = await recipeService.UpdateRecipeAsync(recipeId, request, userId);
+
+        if (result.Error is not null)
+        {
+            return result.Error.Code switch
+            {
+                ErrorCodes.NotFound => TypedResults.NotFound(new ErrorResponse(result.Error)),
+                ErrorCodes.BadRequest => TypedResults.BadRequest(new ErrorResponse(result.Error)),
+                _ => TypedResults.Problem()
+            };
+        }
+
+        return TypedResults.Ok(result.Recipe!.ToRecipeResponse());
+    }
+
+    /// <summary>
+    /// This endpoints deletes a user's recipe by id.
+    /// </summary>
+    /// <param name="recipeId"></param>
+    /// <param name="recipeService"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    private static async Task<Results<Ok, IResult>> DeleteRecipeAsync(
+        int recipeId,
+        IRecipeService recipeService,
+        HttpContext context)
+    {
+        var userId = context.GetUserId();
+
+        var error = await recipeService.DeleteRecipeAsync(recipeId, userId);
+
+        if (error is not null)
+        {
+            return TypedResults.NotFound(new ErrorResponse(error));
+        }
+
+        return TypedResults.Ok();
     }
 }

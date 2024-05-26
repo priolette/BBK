@@ -7,5 +7,7 @@ public interface IRecipeService
 {
     Task<ListResult<ShortRecipeResult>> GetAllRecipesAsync(PaginationFilter? pagination);
     Task<RecipeResult?> GetRecipeByIdAsync(int id);
-    Task<RecipeResult?> CreateRecipeAsync(CreateRecipeRequest request, string userId);
+    Task<CreateUpdateRecipeResult> CreateRecipeAsync(CreateRecipeRequest request, string userId);
+    Task<CreateUpdateRecipeResult> UpdateRecipeAsync(int recipeId, UpdateRecipeRequest request, string userId);
+    Task<ErrorResult?> DeleteRecipeAsync(int recipeId, string userId);
 }

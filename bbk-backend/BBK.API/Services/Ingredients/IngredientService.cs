@@ -18,14 +18,10 @@ public class IngredientService(
         var query = _context.Ingredients
             .OrderBy(i => i.Name);
 
-        if (!string.IsNullOrWhiteSpace(filter.Name))
+        if (!string.IsNullOrWhiteSpace(filter.Search))
         {
-            query = (IOrderedQueryable<Ingredient>)query.Where(q => EF.Functions.ILike(q.Name, '%' + filter.Name + '%'));
-        }
-        if (!string.IsNullOrWhiteSpace(filter.Description))
-        {
-            query = (IOrderedQueryable<Ingredient>)query
-                .Where(q => q.Description != null ? EF.Functions.ILike(q.Description, '%' + filter.Description + '%') : false);
+            query = (IOrderedQueryable<Ingredient>)query.Where(q => EF.Functions.ILike(q.Name, '%' + filter.Search + '%') ||
+                (q.Description != null ? EF.Functions.ILike(q.Description, '%' + filter.Search + '%') : false));
         }
 
         var total = await query.CountAsync();
