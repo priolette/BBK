@@ -14,6 +14,7 @@ export type ShortRecipeResponse = {
   id: number;
   title: string;
   description: string;
+  imageUrl?: string;
   createdById: string;
   createdBy?: UserResponse;
   createdAt: string;
@@ -25,6 +26,7 @@ export type RecipeResponse = {
   id: number;
   title: string;
   description: string;
+  imageUrl?: string;
   createdById: string;
   createdBy?: UserResponse;
   createdAt: string;
@@ -111,6 +113,10 @@ export async function getAllRecipes(
 export async function getRecipe(id: number): Promise<RecipeResponse | null> {
   try {
     const response = await fetch(`${process.env.API_PATH}recipes/${id}`);
+
+    if (!response.ok) {
+      return null;
+    }
 
     return response.json();
   } catch (error) {
