@@ -1,14 +1,15 @@
 ﻿using BBK.API.Contracts.Requests;
-using BBK.API.Data;
 using BBK.API.Data.Models;
+using BBK.API.Repositories.RecipeIngredients;
 
 namespace BBK.API.Services.RecipeIngredients;
 
-public class RecipeIngredientService(AppDbContext context, ILogger<RecipeIngredientService> logger) : IRecipeIngredientService
+public class RecipeIngredientService(
+    IRecipeIngredientsRepository repository,
+    ILogger<RecipeIngredientService> logger) : IRecipeIngredientService
 {
-    private readonly AppDbContext _context = context;
     private readonly ILogger<RecipeIngredientService> _logger = logger;
-
+    private readonly IRecipeIngredientsRepository _repository = repository;
 
     /// <summary>
     /// Adds, updates, and deletes recipe ingredients based on request and provided existing recipe ingredients
@@ -31,7 +32,8 @@ public class RecipeIngredientService(AppDbContext context, ILogger<RecipeIngredi
                 IngredientId = irq.IngredientId ?? throw new InvalidOperationException("IngredientId is required"),
                 UnitId = irq.UnitId ?? throw new InvalidOperationException("UnitId is required"),
                 Amount = irq.Amount ?? throw new InvalidOperationException("Amount is required")
-            });
+            })
+            .ToList();
 
         var ingredientsToDelete = recipeIngredients
             .Where(ri => !requests.Any(irq => irq.Id == ri.Id))
@@ -50,11 +52,9 @@ public class RecipeIngredientService(AppDbContext context, ILogger<RecipeIngredi
             ingredient.Amount = request.Amount ?? ingredient.Amount;
         }
 
-        _context.RecipeIngredients.AddRange(ingredientsToAdd);
-        _context.RecipeIngredients.RemoveRange(ingredientsToDelete);
-        _context.RecipeIngredients.UpdateRange(ingredientsToUpdate);
-
-        await _context.SaveChangesAsync();
+        await _repository.AddRange(ingredientsToAdd);
+        await _repository.UpdateRange(ingredientsToUpdate);
+        await _repository.RemoveRange(ingredientsToDelete);
 
         return [.. ingredientsToUpdate, .. ingredientsToAdd];
     }

@@ -1,40 +1,24 @@
-﻿using BBK.API.Data;
-using BBK.API.Models;
+﻿using BBK.API.Models;
+using BBK.API.Repositories.Recipes;
 using BBK.API.Services.Users;
-using Microsoft.EntityFrameworkCore;
 
 namespace BBK.API.Services.Recipes;
 
 public class RecipeService(
-    AppDbContext dbContext,
-    IUserService userService,
-    ILogger<RecipeService> logger) : IRecipeService
+    IRecipesRepository repository,
+    IUserService userService) : IRecipeService
 {
-    private readonly AppDbContext _context = dbContext;
     private readonly IUserService _userService = userService;
-    private readonly ILogger<RecipeService> _logger = logger;
+    private readonly IRecipesRepository _repository = repository;
 
     public async Task<ListResult<ShortRecipeResult>> GetAllRecipesAsync(PaginationFilter? pagination)
     {
-        var query = _context.Recipes
-            .Include(x => x.Upvotes)
-            .AsQueryable();
+        var listResult = await _repository.GetAllAsync(pagination);
 
-        var total = await query.CountAsync();
-        query = query.OrderBy(r => r.Title);
-
-        if (pagination is not null)
-        {
-            int skip = (pagination.PageNumber - 1) * pagination.PageSize;
-            query = query.Skip(skip).Take(pagination.PageSize);
-        }
-
-        var recipes = await query.ToListAsync();
-
-        var userIds = recipes.Select(r => r.CreatedById).ToArray();
+        var userIds = listResult.Data.Select(r => r.CreatedById).ToArray();
         var users = await _userService.GetUsersByIdsAsync(userIds);
 
-        var results = recipes.Select(recipe => new ShortRecipeResult
+        var results = listResult.Data.Select(recipe => new ShortRecipeResult
         {
             Recipe = recipe,
             User = users.FirstOrDefault(u => u.UserId == recipe.CreatedById)
@@ -43,35 +27,13 @@ public class RecipeService(
         return new ListResult<ShortRecipeResult>
         {
             Data = results,
-            Total = total
+            Total = listResult.Total
         };
     }
 
     public async Task<RecipeResult?> GetRecipeByIdAsync(int id)
     {
-        // TODO: fix this
-        var recipe = await _context.Recipes
-            .Select(r => new RecipeResult
-            {
-                Id = r.Id,
-                Title = r.Title,
-                Description = r.Description,
-                ImageUrl = r.ImageUrl,
-                CreatedById = r.CreatedById,
-                CreatedAt = r.CreatedAt,
-                ModifiedAt = r.ModifiedAt,
-                Steps = r.Steps.ToList(),
-                RecipeIngredients = r.RecipeIngredients.Select(ri => new RecipeIngredientResult
-                {
-                    Id = ri.Id,
-                    Amount = ri.Amount,
-                    Ingredient = ri.Ingredient,
-                    Unit = ri.Unit
-                }).ToList(),
-                Upvotes = r.Upvotes.ToList(),
-                Comments = r.Comments.ToList()
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var recipe = await _repository.GetByIdAsync(id);
 
         if (recipe is null)
         {
@@ -79,8 +41,27 @@ public class RecipeService(
         }
 
         var user = await _userService.GetUserByIdAsync(recipe.CreatedById);
-        recipe.CreatedBy = user;
 
-        return recipe;
+        return new RecipeResult
+        {
+            Id = recipe.Id,
+            Title = recipe.Title,
+            Description = recipe.Description,
+            ImageUrl = recipe.ImageUrl,
+            CreatedById = recipe.CreatedById,
+            CreatedBy = user,
+            CreatedAt = recipe.CreatedAt,
+            ModifiedAt = recipe.ModifiedAt,
+            Steps = [.. recipe.Steps],
+            RecipeIngredients = recipe.RecipeIngredients.Select(ri => new RecipeIngredientResult
+            {
+                Id = ri.Id,
+                Amount = ri.Amount,
+                Ingredient = ri.Ingredient,
+                Unit = ri.Unit
+            }).ToList(),
+            Upvotes = [.. recipe.Upvotes],
+            Comments = [.. recipe.Comments]
+        };
     }
 }

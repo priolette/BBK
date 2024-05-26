@@ -1,6 +1,13 @@
 ﻿using Auth0Net.DependencyInjection;
 using BBK.API.Data;
 using BBK.API.Filters;
+using BBK.API.Repositories.Comments;
+using BBK.API.Repositories.Ingredients;
+using BBK.API.Repositories.RecipeIngredients;
+using BBK.API.Repositories.Recipes;
+using BBK.API.Repositories.Steps;
+using BBK.API.Repositories.Units;
+using BBK.API.Repositories.Upvotes;
 using BBK.API.Services.Comments;
 using BBK.API.Services.Ingredients;
 using BBK.API.Services.RecipeIngredients;
@@ -81,6 +88,14 @@ public static class HostingExtensions
 
     public static void AddApplicationServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<IRecipesRepository, RecipesRepository>();
+        builder.Services.AddScoped<IRecipeIngredientsRepository, RecipeIngredientsRepository>();
+        builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
+        builder.Services.AddScoped<IUnitsRepository, UnitsRepository>();
+        builder.Services.AddScoped<IStepsRepository, StepsRepository>();
+        builder.Services.AddScoped<IUpvotesRepository, UpvotesRepository>();
+        builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
+
         builder.Services.AddScoped<IRecipeService, RecipeService>();
         builder.Services.AddScoped<IUserRecipeService, UserRecipeService>();
         builder.Services.AddScoped<IIngredientService, IngredientService>();

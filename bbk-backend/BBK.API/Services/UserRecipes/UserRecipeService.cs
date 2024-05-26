@@ -3,24 +3,27 @@ using BBK.API.Contracts;
 using BBK.API.Data.Models;
 using BBK.API.Models;
 using Microsoft.EntityFrameworkCore;
-using BBK.API.Data;
 using BBK.API.Services.Recipes;
 using BBK.API.Services.RecipeIngredients;
 using BBK.API.Services.Steps;
 using BBK.API.Services.Users;
+using BBK.API.Repositories.Recipes;
+using BBK.API.Data;
 
 namespace BBK.API.Services.UserRecipes;
 
 public class UserRecipeService(
     AppDbContext context,
+    IRecipesRepository repository,
     IRecipeService recipeService,
     IRecipeIngredientService recipeIngredientService,
     IStepService stepService,
     IUserService userService,
     ILogger<UserRecipeService> logger) : IUserRecipeService
 {
-    private readonly AppDbContext _context = context;
     private readonly ILogger<UserRecipeService> _logger = logger;
+    private readonly AppDbContext _context = context;
+    private readonly IRecipesRepository _repository = repository;
     private readonly IRecipeService _recipeService = recipeService;
     private readonly IRecipeIngredientService _recipeIngredientService = recipeIngredientService;
     private readonly IStepService _stepService = stepService;
@@ -29,17 +32,13 @@ public class UserRecipeService(
     public async Task<List<ShortRecipeResult>> GetAllAsync(string userId)
     {
         var user = await _userService.GetUserByIdAsync(userId);
+        var recipes = await _repository.GetByUserIdAsync(userId);
 
-        return await _context.Recipes
-            .Include(x => x.Upvotes)
-            .Where(x => x.CreatedById == userId)
-            .OrderBy(r => r.Title)
-            .Select(r => new ShortRecipeResult
-            {
-                Recipe = r,
-                User = user
-            })
-            .ToListAsync();
+        return recipes.Select(r => new ShortRecipeResult
+        {
+            Recipe = r,
+            User = user
+        }).ToList();
     }
 
     public async Task<CreateUpdateRecipeResult> CreateAsync(CreateRecipeRequest request, string userId)
@@ -66,8 +65,7 @@ public class UserRecipeService(
 
         try
         {
-            _context.Recipes.Add(recipe);
-            await _context.SaveChangesAsync();
+            await _repository.CreateAsync(recipe);
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -91,12 +89,9 @@ public class UserRecipeService(
 
     public async Task<CreateUpdateRecipeResult> UpdateAsync(int recipeId, UpdateRecipeRequest request, string userId)
     {
-        var recipe = await _context.Recipes
-            .Include(r => r.RecipeIngredients)
-            .Include(r => r.Steps)
-            .FirstOrDefaultAsync(r => r.Id == recipeId && r.CreatedById == userId);
+        var recipe = await _repository.GetByIdAsync(recipeId);
 
-        if (recipe is null)
+        if (recipe is null || recipe.CreatedById != userId)
         {
             return new CreateUpdateRecipeResult
             {
@@ -113,7 +108,7 @@ public class UserRecipeService(
 
         try
         {
-            await _context.SaveChangesAsync();
+            await _repository.UpdateAsync(recipe);
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -195,16 +190,14 @@ public class UserRecipeService(
 
     public async Task<ErrorResult?> DeleteAsync(int recipeId, string userId)
     {
-        var recipe = await _context.Recipes
-            .FirstOrDefaultAsync(r => r.Id == recipeId && r.CreatedById == userId);
+        var recipe = await _repository.GetByIdAsync(recipeId);
 
-        if (recipe is null)
+        if (recipe is null || recipe.CreatedById != userId)
         {
             return new ErrorResult(ErrorCodes.NotFound, "Recipe not found");
         }
 
-        _context.Recipes.Remove(recipe);
-        await _context.SaveChangesAsync();
+        await _repository.DeleteAsync(recipe);
 
         return null;
     }
