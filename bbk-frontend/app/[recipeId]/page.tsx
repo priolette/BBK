@@ -1,3 +1,5 @@
+import { CreateCommentForm } from "@/app/[recipeId]/_components/create-comment-form";
+import { CommentCard } from "@/components/comment-card";
 import { LikeButton } from "@/components/like-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getRecipe } from "@/lib/server/recipes";
@@ -33,7 +35,7 @@ export default async function Page({
             <Image
               src={recipeData.imageUrl ?? ""}
               alt={recipeData.title}
-              className="w-96 rounded-lg pb-4"
+              className="w-96 rounded-lg"
               width={150}
               height={100}
             />
@@ -42,7 +44,7 @@ export default async function Page({
           )}
           <p className="text-lg">{recipeData.description}</p>
           <span className="flex items-center gap-2">
-            Created by:{" "}
+            <span className="font-semibold">Created by: </span>
             {!!recipeData.createdBy ? (
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
@@ -54,7 +56,9 @@ export default async function Page({
                     <User />
                   </AvatarFallback>
                 </Avatar>
-                <span>{recipeData.createdBy.fullName}</span>
+                <span className="font-semibold">
+                  {recipeData.createdBy.fullName}
+                </span>
               </div>
             ) : (
               <></>
@@ -90,19 +94,18 @@ export default async function Page({
       {/* Comments */}
       <div className="col-span-full flex justify-center">
         <div className="justify-start">
-          <h2 className="item-start my-4 text-2xl font-semibold">Comments:</h2>
+          <h2 className="my-4 text-2xl font-semibold">Comments:</h2>
           {!recipeData.comments && (
             <div>
               <span>There are currently no comments for this recipe</span>
             </div>
           )}
-          <ul className="ml-6 list-disc">
+          <div className="flex flex-col gap-4">
             {recipeData.comments.map((comment) => (
-              <li key={comment.id} className="mb-1">
-                {comment.text}
-              </li>
+              <CommentCard key={comment.id} comment={comment} />
             ))}
-          </ul>
+            <CreateCommentForm recipeId={recipeData.id} />
+          </div>
         </div>
       </div>
     </div>

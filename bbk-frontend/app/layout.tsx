@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Alkatra, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
@@ -10,9 +10,10 @@ import { LoginButton } from "@/components/login-button";
 import { AddRecipeButton } from "@/components/add-recipe-button";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const alkatra = Alkatra({ subsets: ["latin"], variable: "--font-alkatra" });
 
 export const metadata: Metadata = {
-  title: "Recipes",
+  title: "Recipify",
   description: "Recipe sharing platform",
 };
 
@@ -51,7 +52,15 @@ function NavBar() {
   return (
     <header className="flex w-full flex-row items-center gap-4 border-b p-4 text-xl font-semibold">
       <nav className="flex w-full items-center">
-        <Link href={"/"}>Recipes</Link>
+        <Link
+          href={"/"}
+          className={cn(
+            "font-alkatra text-3xl font-extrabold",
+            alkatra.variable,
+          )}
+        >
+          Recipify
+        </Link>
       </nav>
       <AddRecipeButton />
       <ThemeToggle />
