@@ -1,11 +1,13 @@
 ﻿using Auth0Net.DependencyInjection;
 using BBK.API.Data;
 using BBK.API.Filters;
+using BBK.API.Services.Comments;
 using BBK.API.Services.Ingredients;
 using BBK.API.Services.RecipeIngredients;
 using BBK.API.Services.Recipes;
 using BBK.API.Services.Steps;
 using BBK.API.Services.Units;
+using BBK.API.Services.Upvotes;
 using BBK.API.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -84,6 +86,8 @@ public static class HostingExtensions
         builder.Services.AddScoped<IUnitService, UnitService>();
         builder.Services.AddScoped<IStepService, StepService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IUpvoteService, UpvoteService>();
+        builder.Services.AddScoped<ICommentService, CommentService>();
     }
 
     public static void AddOpenApi(this WebApplicationBuilder builder)
