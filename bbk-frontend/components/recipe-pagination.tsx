@@ -16,7 +16,7 @@ type RecipePageProps = {
   currentPage: number;
 };
 
-export async function RecipePagination({
+export function RecipePagination({
   itemCount,
   pageSize,
   currentPage,

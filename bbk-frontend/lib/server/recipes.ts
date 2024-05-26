@@ -1,6 +1,7 @@
+import { UserResponse } from "@/lib/server/user";
 import "server-only";
 
-type ShortRecipePagedResponse = {
+export type ShortRecipePagedResponse = {
   data: ShortRecipeResponse[];
   pageSize: number;
   pageNumber: number;
@@ -9,21 +10,23 @@ type ShortRecipePagedResponse = {
   totalRecords?: number;
 };
 
-type ShortRecipeResponse = {
+export type ShortRecipeResponse = {
   id: number;
-  title?: string;
-  description?: string;
-  createdById?: string;
+  title: string;
+  description: string;
+  createdById: string;
+  createdBy?: UserResponse;
   createdAt: string;
   modifiedAt?: string;
   upvotes: number;
 };
 
-type RecipeResponse = {
+export type RecipeResponse = {
   id: number;
-  title?: string;
-  description?: string;
-  createdById?: string;
+  title: string;
+  description: string;
+  createdById: string;
+  createdBy?: UserResponse;
   createdAt: string;
   modifiedAt?: string;
   ingredients: RecipeIngredientResponse[];
@@ -32,37 +35,56 @@ type RecipeResponse = {
   comments: CommentResponse[];
 };
 
-type RecipeIngredientResponse = {
+export type RecipeIngredientResponse = {
   id: number;
   amount: number;
   ingredient: IngredientResponse;
   unit: UnitResponse;
 };
 
-type IngredientResponse = {
+export type IngredientResponse = {
   id: number;
-  name?: string;
+  name: string;
   description?: string;
 };
 
-type UnitResponse = {
+export type UnitResponse = {
   id: number;
-  name?: string;
-  code?: string;
+  name: string;
+  code: string;
 };
 
-type StepResponse = {
+export type StepResponse = {
   id: number;
-  description?: string;
+  description: string;
   order: number;
 };
 
-type CommentResponse = {
+export type CommentResponse = {
   id: number;
   recipeId: number;
-  createdById?: string;
+  createdById: string;
   createdAt: string;
-  text?: string;
+  text: string;
+};
+
+export type CreateRecipeRequest = {
+  title: string;
+  description: string;
+  imageUrl?: string;
+  ingredients: CreateRecipeIngredientRequest[];
+  steps: CreateStepRequest[];
+};
+
+export type CreateRecipeIngredientRequest = {
+  ingredientId: number;
+  unitId: number;
+  amount: number;
+};
+
+export type CreateStepRequest = {
+  description: string;
+  order: number;
 };
 
 export async function getAllRecipes(
