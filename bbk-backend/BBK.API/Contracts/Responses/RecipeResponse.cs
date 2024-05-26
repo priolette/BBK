@@ -13,5 +13,7 @@ public record RecipeResponse
     public required List<RecipeIngredientResponse> Ingredients { get; init; } = [];
     public required List<StepResponse> Steps { get; init; } = [];
     public required int Upvotes { get; init; }
+    public bool? IsUpvoted { get; init; }
     public required List<CommentResponse> Comments { get; init; } = [];
+    public List<int>? UserComments { get; init; }
 }

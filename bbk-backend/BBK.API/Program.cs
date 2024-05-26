@@ -51,6 +51,7 @@ app.UseAuthorization();
 
 // Endpoint mapping
 app.MapGroup("/api/v1")
+    .MapInteractionsEndpoints()
     .MapUnitsEndpoints()
     .MapIngredientsEndpoints()
     .MapRecipesEndpoints();

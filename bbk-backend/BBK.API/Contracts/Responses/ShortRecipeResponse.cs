@@ -11,4 +11,5 @@ public record ShortRecipeResponse
     public required DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? ModifiedAt { get; init; }
     public int Upvotes { get; init; }
+    public bool? IsUpvoted { get; init; }
 }

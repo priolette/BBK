@@ -40,6 +40,8 @@ public static class RecipesEndpoints
         IRecipeService recipeService,
         HttpContext context)
     {
+        var userId = context.GetUserId();
+
         var pagination = new PaginationFilter
         {
             PageNumber = paginationQuery.PageNumber ?? 1,
@@ -47,7 +49,7 @@ public static class RecipesEndpoints
         };
 
         var result = await recipeService.GetAllRecipesAsync(pagination);
-        var recipes = result.Data.Select(r => r.ToShortRecipeResponse());
+        var recipes = result.Data.Select(r => r.ToShortRecipeResponse(userId));
 
         var response = new PagedResponse<ShortRecipeResponse>(recipes, pagination.PageNumber, pagination.PageSize, result.Total);
 
@@ -66,6 +68,8 @@ public static class RecipesEndpoints
         IRecipeService recipeService,
         HttpContext context)
     {
+        var userId = context.GetUserId();
+
         var recipe = await recipeService.GetRecipeByIdAsync(recipeId);
 
         if (recipe is null)
@@ -73,7 +77,7 @@ public static class RecipesEndpoints
             return TypedResults.NotFound();
         }
 
-        return TypedResults.Ok(recipe.ToRecipeResponse());
+        return TypedResults.Ok(recipe.ToRecipeResponse(userId));
     }
 
     /// <summary>
@@ -90,7 +94,7 @@ public static class RecipesEndpoints
     {
         var userId = context.GetUserId();
 
-        var result = await recipeService.CreateRecipeAsync(request, userId);
+        var result = await recipeService.CreateRecipeAsync(request, userId!);
 
         if (result.Error is not null)
         {
@@ -116,7 +120,7 @@ public static class RecipesEndpoints
     {
         var userId = context.GetUserId();
 
-        var result = await recipeService.UpdateRecipeAsync(recipeId, request, userId);
+        var result = await recipeService.UpdateRecipeAsync(recipeId, request, userId!);
 
         if (result.Error is not null)
         {
@@ -145,7 +149,7 @@ public static class RecipesEndpoints
     {
         var userId = context.GetUserId();
 
-        var error = await recipeService.DeleteRecipeAsync(recipeId, userId);
+        var error = await recipeService.DeleteRecipeAsync(recipeId, userId!);
 
         if (error is not null)
         {
