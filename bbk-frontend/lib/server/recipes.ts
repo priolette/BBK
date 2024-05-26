@@ -1,4 +1,5 @@
 import { UserResponse } from "@/lib/server/user";
+import { getAccessToken } from "@auth0/nextjs-auth0";
 import "server-only";
 
 export type ShortRecipePagedResponse = {
@@ -20,6 +21,7 @@ export type ShortRecipeResponse = {
   createdAt: string;
   modifiedAt?: string;
   upvotes: number;
+  isUpvoted?: boolean;
 };
 
 export type RecipeResponse = {
@@ -34,6 +36,7 @@ export type RecipeResponse = {
   ingredients: RecipeIngredientResponse[];
   steps: StepResponse[];
   upvotes: number;
+  isUpvoted?: boolean;
   comments: CommentResponse[];
 };
 
@@ -93,9 +96,19 @@ export async function getAllRecipes(
   currentPage: number,
   pageSize: number,
 ): Promise<ShortRecipePagedResponse> {
+  let token;
+  try {
+    token = await getAccessToken();
+  } catch (error) {}
+
   try {
     const response = await fetch(
       `${process.env.API_PATH}recipes?PageNumber=${currentPage}&PageSize=${pageSize}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token?.accessToken}`,
+        },
+      },
     );
 
     return response.json();

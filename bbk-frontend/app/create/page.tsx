@@ -7,7 +7,7 @@ export default async function CreateRecipePage() {
   const units = await getAllUnits();
 
   return (
-    <div>
+    <div className=" px-80">
       <h1 className="px-4 pb-2 pt-4 text-2xl font-bold">Create New Recipe</h1>
       <CreateRecipeForm ingredients={ingredients.data} units={units} />
     </div>

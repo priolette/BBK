@@ -2,7 +2,7 @@ import { CreateIngredientForm } from "@/app/create/ingredient/_components/create
 
 export default function CreateIngredientPage() {
   return (
-    <div>
+    <div className="px-80">
       <h1 className="px-4 pb-2 pt-4 text-2xl font-bold">
         Create New Ingredient
       </h1>

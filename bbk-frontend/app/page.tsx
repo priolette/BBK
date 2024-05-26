@@ -15,6 +15,8 @@ import { notFound } from "next/navigation";
 import { LikeButton } from "@/components/like-button";
 import { Pizza } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home({
   searchParams,
 }: {
@@ -58,7 +60,7 @@ export default async function Home({
             <LikeButton
               recipeId={recipe.id}
               initialLikes={recipe.upvotes}
-              isLiked={false}
+              isLiked={recipe.isUpvoted || false}
             />
           </CardFooter>
         </Card>

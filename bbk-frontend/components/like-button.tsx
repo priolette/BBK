@@ -2,6 +2,7 @@
 
 import { updateLike } from "@/app/actions";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { Heart } from "lucide-react";
 import { useOptimistic, useState } from "react";
 
@@ -14,7 +15,8 @@ export function LikeButton({
   initialLikes: number;
   isLiked: boolean;
 }) {
-  const [likedState, setLikedState] = useOptimistic(isLiked, (state) => !state);
+  const { user } = useUser();
+  const [likedState, setLikedState] = useState(isLiked);
   const [optimisticLikes, addOptimisticLike] = useOptimistic(
     initialLikes,
     (state, action: "like" | "dislike") => {
@@ -30,6 +32,9 @@ export function LikeButton({
     <Button
       className="gap-2 rounded-full"
       onClick={async () => {
+        if (!user) {
+          return;
+        }
         setLikedState(!likedState);
         addOptimisticLike(likedState ? "dislike" : "like");
         await updateLike(recipeId);
