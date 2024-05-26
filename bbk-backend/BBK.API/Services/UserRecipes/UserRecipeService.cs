@@ -69,6 +69,10 @@ public class UserRecipeService(
             _context.Recipes.Add(recipe);
             await _context.SaveChangesAsync();
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create recipe");
@@ -111,6 +115,11 @@ public class UserRecipeService(
         {
             await _context.SaveChangesAsync();
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            transaction.Rollback();
+            throw;
+        }
         catch (Exception ex)
         {
             transaction.Rollback();
@@ -133,6 +142,11 @@ public class UserRecipeService(
                 {
                     Error = new ErrorResult(ErrorCodes.BadRequest, ex.Message)
                 };
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                transaction.Rollback();
+                throw;
             }
             catch (Exception ex)
             {
@@ -157,6 +171,11 @@ public class UserRecipeService(
                 {
                     Error = new ErrorResult(ErrorCodes.BadRequest, ex.Message)
                 };
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                transaction.Rollback();
+                throw;
             }
             catch (Exception ex)
             {

@@ -7,7 +7,8 @@ public class RecipeIngredient
     public int IngredientId { get; set; }
     public int UnitId { get; set; }
     public double Amount { get; set; }
-    
+    public uint ConcurrecyToken { get; set; }
+
     public virtual Recipe Recipe { get; set; } = default!;
     public virtual Ingredient Ingredient { get; set; } = default!;
     public virtual Unit Unit { get; set; } = default!;

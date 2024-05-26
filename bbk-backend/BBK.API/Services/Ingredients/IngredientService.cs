@@ -54,6 +54,10 @@ public class IngredientService(
             _context.Ingredients.Add(ingredient);
             await _context.SaveChangesAsync();
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating ingredient");

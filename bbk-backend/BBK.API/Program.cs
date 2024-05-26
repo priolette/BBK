@@ -1,7 +1,9 @@
 using BBK.API;
+using BBK.API.Contracts;
 using BBK.API.Contracts.Responses;
 using BBK.API.Endpoints;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,6 @@ builder.AddOpenApi();
 var app = builder.Build();
 
 // Handler for any uncaught exceptions.
-// Custom handling for request deserialization exceptions.
 app.UseExceptionHandler(builder =>
 {
     builder.Run(async context =>
@@ -27,9 +28,17 @@ app.UseExceptionHandler(builder =>
         if (exception is BadHttpRequestException)
         {
             var badRequestResult = TypedResults.BadRequest(
-                new ErrorResponse("BadRequest", "Invalid request body."));
+                new ErrorResponse(ErrorCodes.BadRequest, "Invalid request body."));
 
             await badRequestResult.ExecuteAsync(context);
+            return;
+        }
+        else if (exception is DbUpdateConcurrencyException)
+        {
+            var concurrencyResult = TypedResults.Conflict(
+                new ErrorResponse(ErrorCodes.ConcurrencyError, "The resource has been modified by another user."));
+
+            await concurrencyResult.ExecuteAsync(context);
             return;
         }
 
@@ -39,7 +48,6 @@ app.UseExceptionHandler(builder =>
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
     app.UseOpenApi();
     app.MigrateDatabase();
 }

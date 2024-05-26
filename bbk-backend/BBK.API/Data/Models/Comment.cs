@@ -7,6 +7,7 @@ public class Comment
     public required string CreatedById { get; set; }
     public required DateTimeOffset CreatedAt { get; set; }
     public required string Text { get; set; }
+    public uint ConcurrecyToken { get; set; }
 
     public virtual Recipe Recipe { get; set; } = default!;
 }

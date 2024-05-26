@@ -9,6 +9,7 @@ public class Recipe
     public required string CreatedById { get; set; }
     public required DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? ModifiedAt { get; set; }
+    public uint ConcurrecyToken { get; set; }
 
     public virtual ICollection<Step> Steps { get; set; } = default!;
     public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = default!;
