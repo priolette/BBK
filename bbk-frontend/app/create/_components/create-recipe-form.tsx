@@ -31,7 +31,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { createRecipe } from "@/app/create/actions";
@@ -53,25 +53,18 @@ export function CreateRecipeForm({
       steps: [],
     },
   });
-  const {
-    fields: ingredientFields,
-    append: appendIngredient,
-    remove: removeIngredient,
-  } = useFieldArray({
+  const { fields: ingredientFields, append: appendIngredient } = useFieldArray({
     control: recipeForm.control,
     name: "ingredients",
   });
-  const {
-    fields: stepFields,
-    append: appendStep,
-    remove: removeStep,
-  } = useFieldArray({
+  const { fields: stepFields, append: appendStep } = useFieldArray({
     control: recipeForm.control,
     name: "steps",
   });
 
   const onRecipeSubmit = async (values: z.infer<typeof CreateRecipeSchema>) => {
     await createRecipe(values);
+    console.log(values);
   };
 
   return (
@@ -262,15 +255,6 @@ export function CreateRecipeForm({
                     )}
                   />
                 </div>
-                <Button
-                  onClick={() => {
-                    removeIngredient(index);
-                  }}
-                  variant="destructive"
-                  size="icon"
-                >
-                  <Trash />
-                </Button>
               </div>
             </div>
           ))}
@@ -284,7 +268,6 @@ export function CreateRecipeForm({
             }
             type="button"
             className="max-w-min gap-2"
-            variant="secondary"
           >
             <Plus />
             Add Ingredient
@@ -292,47 +275,34 @@ export function CreateRecipeForm({
         </div>
 
         <div className="flex flex-col space-y-4">
-          <Label className="space-y-9">Steps</Label>
           {stepFields.map((field, index) => (
-            <div key={`step_${field.id}`} className="flex flex-col">
-              <Label className="pb-2">Step {index + 1}:</Label>
-              <div className="flex gap-2">
-                <FormField
-                  key={`description_${field.id}`}
-                  control={recipeForm.control}
-                  name={`steps.${index}.description`}
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormControl>
-                        <Textarea placeholder="Step description" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  onClick={() => {
-                    removeStep(index);
-                  }}
-                  variant="destructive"
-                  size="icon"
-                >
-                  <Trash />
-                </Button>
-                <FormField
-                  key={`order_${field.id}`}
-                  control={recipeForm.control}
-                  name={`steps.${index}.order`}
-                  render={({ field }) => (
-                    <FormItem hidden>
-                      <FormControl>
-                        <Input {...field} value={index + 1} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            <div key={`step_${field.id}`}>
+              <FormField
+                key={`description_${field.id}`}
+                control={recipeForm.control}
+                name={`steps.${index}.description`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea placeholder="Step description" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                key={`order_${field.id}`}
+                control={recipeForm.control}
+                name={`steps.${index}.order`}
+                render={({ field }) => (
+                  <FormItem hidden>
+                    <FormControl>
+                      <Input {...field} value={index + 1} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           ))}
           <Button
@@ -344,7 +314,6 @@ export function CreateRecipeForm({
             }
             type="button"
             className="max-w-min gap-2"
-            variant="secondary"
           >
             <Plus />
             Add Step

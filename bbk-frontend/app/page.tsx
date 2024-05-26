@@ -33,7 +33,7 @@ export default async function Home({
   return (
     <div className="flex flex-wrap gap-4 p-4">
       {res.data.map((recipe) => (
-        <Card key={recipe.id} className="mb-auto flex w-[400px] flex-col">
+        <Card key={recipe.id} className="flex w-[400px] flex-col">
           <Link href={`/${recipe.id}`} key={recipe.id}>
             <CardHeader>
               <CardTitle>{recipe.title}</CardTitle>
@@ -53,7 +53,7 @@ export default async function Home({
               )}
             </CardContent>
           </Link>
-          <CardFooter className="justify-between">
+          <CardFooter className="flex h-full justify-between">
             <CardDescription>
               Created by: {recipe.createdBy?.fullName || "Unknown"}
             </CardDescription>

@@ -1,4 +1,3 @@
-import { CommentResponse } from "@/lib/server/comments";
 import { UserResponse } from "@/lib/server/user";
 import { getAccessToken } from "@auth0/nextjs-auth0";
 import "server-only";
@@ -66,6 +65,14 @@ export type StepResponse = {
   order: number;
 };
 
+export type CommentResponse = {
+  id: number;
+  recipeId: number;
+  createdById: string;
+  createdAt: string;
+  text: string;
+};
+
 export type CreateRecipeRequest = {
   title: string;
   description: string;
@@ -83,14 +90,6 @@ export type CreateRecipeIngredientRequest = {
 export type CreateStepRequest = {
   description: string;
   order: number;
-};
-
-export type UpdateRecipeRequest = {
-  title: string;
-  description: string;
-  imageUrl: string;
-  ingredients: CreateRecipeIngredientRequest[];
-  steps: CreateStepRequest[];
 };
 
 export async function getAllRecipes(
@@ -145,21 +144,5 @@ export async function getRecipe(id: number): Promise<RecipeResponse | null> {
   } catch (error) {
     console.error(error);
     return null;
-  }
-}
-
-export async function getUserRecipes(): Promise<RecipeResponse[]> {
-  try {
-    const token = await getAccessToken();
-    const response = await fetch(`${process.env.API_PATH}user/recipes`, {
-      headers: {
-        Authorization: `Bearer ${token.accessToken}`,
-      },
-    });
-
-    return response.json();
-  } catch (error) {
-    console.error(error);
-    return [];
   }
 }

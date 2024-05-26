@@ -29,7 +29,7 @@ export function LikeButton({
 
   return (
     <Button
-      className="gap-2"
+      className="gap-2 rounded-full"
       onClick={async () => {
         if (!user) {
           return;

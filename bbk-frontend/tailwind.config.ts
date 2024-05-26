@@ -74,7 +74,6 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
-        alkatra: ["var(--font-alkatra)", ...fontFamily.sans],
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
     },

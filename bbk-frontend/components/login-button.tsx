@@ -9,8 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { CookingPot, LogOut, User } from "lucide-react";
-import Link from "next/link";
+import { LogOut, User } from "lucide-react";
 
 export function LoginButton() {
   const { user } = useUser();
@@ -34,16 +33,10 @@ export function LoginButton() {
                   <User />
                 </AvatarFallback>
               </Avatar>
-              <span className="font-semibold">{user.name}</span>
+              <span>{user.name}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild className="hover:cursor-pointer">
-              <Link href="/me/recipes">
-                <CookingPot className="mr-2 h-4 w-4" />
-                My Recipes
-              </Link>
-            </DropdownMenuItem>
             <DropdownMenuItem asChild className="hover:cursor-pointer">
               <a href="/api/auth/logout" className="flex items-center">
                 <LogOut className="mr-2 h-4 w-4" />

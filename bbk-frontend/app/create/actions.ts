@@ -15,7 +15,7 @@ export async function createRecipe(
     throw new Error("You must be logged in to create a recipe.");
   }
 
-  const res = await fetch(`${process.env.API_PATH}user/recipes`, {
+  const res = await fetch(`${process.env.API_PATH}recipes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -56,30 +56,4 @@ export async function createIngredient(
 
   revalidatePath("/create");
   redirect("/create");
-}
-
-export async function updateRecipe(
-  formData: z.infer<typeof CreateRecipeSchema>,
-  recipeId: number,
-) {
-  const token = await getAccessToken();
-  if (!token) {
-    throw new Error("You must be logged in to update a recipe.");
-  }
-
-  const res = await fetch(`${process.env.API_PATH}user/recipes/${recipeId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token.accessToken}`,
-    },
-    body: JSON.stringify(formData),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to update recipe.");
-  }
-
-  revalidatePath("/me/recipes");
-  redirect("/me/recipes");
 }

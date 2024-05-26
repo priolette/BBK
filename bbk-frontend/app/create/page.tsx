@@ -3,10 +3,8 @@ import { getAllIngredients } from "@/lib/server/ingredients";
 import { getAllUnits } from "@/lib/server/units";
 
 export default async function CreateRecipePage() {
-  const [ingredients, units] = await Promise.all([
-    getAllIngredients(),
-    getAllUnits(),
-  ]);
+  const ingredients = await getAllIngredients();
+  const units = await getAllUnits();
 
   return (
     <div className="xl:px-80">
