@@ -20,9 +20,9 @@ export async function updateLike(recipeId: number) {
   );
 
   if (!res.ok) {
-    console.log(res.statusText);
     throw new Error("Failed to update like.");
   }
 
   revalidatePath("/");
+  revalidatePath(`/recipes/${recipeId}`);
 }

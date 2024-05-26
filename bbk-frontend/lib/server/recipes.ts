@@ -124,8 +124,17 @@ export async function getAllRecipes(
 }
 
 export async function getRecipe(id: number): Promise<RecipeResponse | null> {
+  let token;
   try {
-    const response = await fetch(`${process.env.API_PATH}recipes/${id}`);
+    token = await getAccessToken();
+  } catch (error) {}
+
+  try {
+    const response = await fetch(`${process.env.API_PATH}recipes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token?.accessToken}`,
+      },
+    });
 
     if (!response.ok) {
       return null;

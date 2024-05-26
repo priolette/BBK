@@ -16,14 +16,13 @@ export function LikeButton({
   isLiked: boolean;
 }) {
   const { user } = useUser();
-  const [likedState, setLikedState] = useState(isLiked);
-  const [optimisticLikes, addOptimisticLike] = useOptimistic(
-    initialLikes,
+  const [{ count, state }, addOptimisticLike] = useOptimistic(
+    { count: initialLikes, state: isLiked },
     (state, action: "like" | "dislike") => {
       if (action === "like") {
-        return state + 1;
+        return { count: state.count + 1, state: true };
       } else {
-        return state - 1;
+        return { count: state.count - 1, state: false };
       }
     },
   );
@@ -35,13 +34,12 @@ export function LikeButton({
         if (!user) {
           return;
         }
-        setLikedState(!likedState);
-        addOptimisticLike(likedState ? "dislike" : "like");
+        addOptimisticLike(state ? "dislike" : "like");
         await updateLike(recipeId);
       }}
     >
-      {likedState ? <Heart fill="white" /> : <Heart />}
-      {optimisticLikes}
+      {state ? <Heart fill="white" /> : <Heart />}
+      {count}
     </Button>
   );
 }
