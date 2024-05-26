@@ -32,7 +32,7 @@ public static class DomainToContract
             Steps = recipe.Steps.Select(ModelToContract.ToStepResponse).ToList(),
             Upvotes = recipe.Upvotes.Count,
             IsUpvoted = isUpvoted,
-            Comments = recipe.Comments.Select(ModelToContract.ToCommentResponse).ToList(),
+            Comments = recipe.Comments.Select(ToCommentResponse).ToList(),
             UserComments = userComments
         };
     }
@@ -64,6 +64,19 @@ public static class DomainToContract
             Amount = ingredient.Amount,
             Ingredient = ModelToContract.ToIngredientResponse(ingredient.Ingredient),
             Unit = ModelToContract.ToUnitResponse(ingredient.Unit)
+        };
+    }
+
+    public static CommentResponse ToCommentResponse(this CommentResult comment)
+    {
+        return new CommentResponse
+        {
+            Id = comment.Id,
+            RecipeId = comment.RecipeId,
+            CreatedById = comment.CreatedById,
+            CreatedBy = comment.CreatedBy?.ToUserResponse(),
+            CreatedAt = comment.CreatedAt,
+            Text = comment.Text
         };
     }
 

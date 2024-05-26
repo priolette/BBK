@@ -40,7 +40,18 @@ public class RecipeService(
             return null;
         }
 
-        var user = await _userService.GetUserByIdAsync(recipe.CreatedById);
+        var recipeUser = await _userService.GetUserByIdAsync(recipe.CreatedById);
+        var commentsUsers = await _userService.GetUsersByIdsAsync(recipe.Comments.Select(c => c.CreatedById).ToArray());
+
+        var commentResults = recipe.Comments.Select(c => new CommentResult
+        {
+            Id = c.Id,
+            RecipeId = c.RecipeId,
+            CreatedById = c.CreatedById,
+            CreatedBy = commentsUsers.FirstOrDefault(u => u.UserId == c.CreatedById),
+            CreatedAt = c.CreatedAt,
+            Text = c.Text
+        }).ToList();
 
         return new RecipeResult
         {
@@ -49,7 +60,7 @@ public class RecipeService(
             Description = recipe.Description,
             ImageUrl = recipe.ImageUrl,
             CreatedById = recipe.CreatedById,
-            CreatedBy = user,
+            CreatedBy = recipeUser,
             CreatedAt = recipe.CreatedAt,
             ModifiedAt = recipe.ModifiedAt,
             Steps = [.. recipe.Steps],
@@ -61,7 +72,7 @@ public class RecipeService(
                 Unit = ri.Unit
             }).ToList(),
             Upvotes = [.. recipe.Upvotes],
-            Comments = [.. recipe.Comments]
+            Comments = commentResults
         };
     }
 }
