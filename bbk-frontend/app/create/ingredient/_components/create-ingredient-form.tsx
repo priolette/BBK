@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { CreateIngredientSchema } from "@/lib/formSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export function CreateIngredientForm() {
@@ -26,7 +27,15 @@ export function CreateIngredientForm() {
   });
 
   const onSubmit = async (data: z.infer<typeof CreateIngredientSchema>) => {
-    await createIngredient(data);
+    try {
+      await createIngredient(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        throw error;
+      }
+    }
   };
 
   return (

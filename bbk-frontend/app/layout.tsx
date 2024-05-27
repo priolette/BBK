@@ -8,6 +8,7 @@ import Link from "next/link";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { LoginButton } from "@/components/login-button";
 import { AddRecipeButton } from "@/components/add-recipe-button";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const alkatra = Alkatra({ subsets: ["latin"], variable: "--font-alkatra" });
@@ -41,6 +42,7 @@ export default function RootLayout({
               <NavBar />
               <main className="overflow-y-auto">{children}</main>
             </div>
+            <Toaster />
           </ThemeProvider>
         </body>
       </UserProvider>

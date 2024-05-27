@@ -27,7 +27,7 @@ export async function createComment(comment: CreateCommentRequest) {
       throw new Error("Failed to create comment");
     }
   } catch (error) {
-    console.error(error);
+    throw new Error("Failed to create comment");
   }
 
   revalidatePath("/");

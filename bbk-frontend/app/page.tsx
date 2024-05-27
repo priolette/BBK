@@ -26,7 +26,7 @@ export default async function Home({
   const currentPage = searchParams?.page || 1;
   const res = await getAllRecipes(currentPage, perPage);
 
-  if (res.data.length === 0 && currentPage > 1) {
+  if (!res.data && currentPage > 1) {
     notFound();
   }
 
@@ -49,7 +49,9 @@ export default async function Home({
                   height={100}
                 />
               ) : (
-                <Pizza className="h-24 w-24" />
+                <div className="flex justify-center">
+                  <Pizza className="h-24 w-24" />
+                </div>
               )}
             </CardContent>
           </Link>

@@ -35,6 +35,7 @@ import { Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { createRecipe } from "@/app/create/actions";
+import { toast } from "sonner";
 
 export function CreateRecipeForm({
   ingredients,
@@ -71,7 +72,15 @@ export function CreateRecipeForm({
   });
 
   const onRecipeSubmit = async (values: z.infer<typeof CreateRecipeSchema>) => {
-    await createRecipe(values);
+    try {
+      await createRecipe(values);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        throw error;
+      }
+    }
   };
 
   return (
