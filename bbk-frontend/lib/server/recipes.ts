@@ -143,8 +143,7 @@ export async function getRecipe(id: number): Promise<RecipeResponse | null> {
 
     return response.json();
   } catch (error) {
-    console.error(error);
-    return null;
+    throw new Error("Failed to fetch recipe");
   }
 }
 

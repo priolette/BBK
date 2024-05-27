@@ -15,6 +15,7 @@ import { CreateCommentSchema } from "@/lib/formSchemas";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export function CreateCommentForm({ recipeId }: { recipeId: number }) {
@@ -41,8 +42,16 @@ export function CreateCommentForm({ recipeId }: { recipeId: number }) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(async (data) => {
-              await createComment(data);
-              form.reset({ recipeId, text: "" });
+              try {
+                await createComment(data);
+                form.reset({ recipeId, text: "" });
+              } catch (error) {
+                if (error instanceof Error) {
+                  toast.error(error.message);
+                } else {
+                  throw error;
+                }
+              }
             })}
             className="flex flex-col gap-4"
           >

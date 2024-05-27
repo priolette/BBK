@@ -50,8 +50,7 @@ export async function createIngredient(
   });
 
   if (!res.ok) {
-    const data: ErrorResponse = await res.json();
-    return { message: null, error: data.message };
+    throw new Error("Failed to create ingredient.");
   }
 
   revalidatePath("/create");
@@ -77,6 +76,14 @@ export async function updateRecipe(
   });
 
   if (!res.ok) {
+    const error: ErrorResponse = await res.json();
+
+    if (error.code === "NotFound") {
+      throw new Error("Recipe not found.");
+    } else if (error.code === "ConcurrencyError") {
+      throw new Error("Recipe has been already modified.");
+    }
+
     throw new Error("Failed to update recipe.");
   }
 

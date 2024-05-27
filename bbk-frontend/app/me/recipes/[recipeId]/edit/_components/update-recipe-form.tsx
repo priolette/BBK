@@ -38,6 +38,7 @@ import { Label } from "@/components/ui/label";
 import { Plus, Trash } from "lucide-react";
 import Link from "next/link";
 import { updateRecipe } from "@/app/create/actions";
+import { toast } from "sonner";
 
 export function UpdateRecipeForm({
   recipe,
@@ -83,7 +84,15 @@ export function UpdateRecipeForm({
   });
 
   const onRecipeSubmit = async (values: z.infer<typeof CreateRecipeSchema>) => {
-    await updateRecipe(values, recipe.id);
+    try {
+      await updateRecipe(values, recipe.id);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        throw error;
+      }
+    }
   };
 
   return (

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { Heart } from "lucide-react";
 import { useOptimistic, useState } from "react";
+import { toast } from "sonner";
 
 export function LikeButton({
   recipeId,
@@ -35,7 +36,15 @@ export function LikeButton({
           return;
         }
         addOptimisticLike(state ? "dislike" : "like");
-        await updateLike(recipeId);
+        try {
+          await updateLike(recipeId);
+        } catch (error) {
+          if (error instanceof Error) {
+            toast.error(error.message);
+          } else {
+            throw error;
+          }
+        }
       }}
     >
       {state ? <Heart fill="white" /> : <Heart />}

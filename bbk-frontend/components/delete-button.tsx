@@ -19,6 +19,7 @@ import { Trash } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { toast } from "sonner";
 
 export function DeleteButton({ recipeId }: { recipeId: number }) {
   const { user } = useUser();
@@ -51,9 +52,17 @@ export function DeleteButton({ recipeId }: { recipeId: number }) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(async (data) => {
-              console.log(data);
-              await deleteRecipe(data.recipeId);
-              setOpen(false);
+              try {
+                await deleteRecipe(data.recipeId);
+              } catch (error) {
+                if (error instanceof Error) {
+                  toast.error(error.message);
+                } else {
+                  throw error;
+                }
+              } finally {
+                setOpen(false);
+              }
             })}
           >
             <FormField
