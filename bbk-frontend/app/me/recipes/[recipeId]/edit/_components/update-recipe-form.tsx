@@ -60,10 +60,12 @@ export function UpdateRecipeForm({
         ingredientId: i.ingredient.id,
         unitId: i.unit.id,
       })),
-      steps: recipe.steps.map((s) => ({
-        description: s.description,
-        order: s.order,
-      })),
+      steps: recipe.steps
+        .map((s) => ({
+          description: s.description,
+          order: s.order,
+        }))
+        .sort((a, b) => a.order - b.order),
     },
   });
   const {

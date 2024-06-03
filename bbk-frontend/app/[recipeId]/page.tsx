@@ -83,11 +83,13 @@ export default async function Page({
         <div className="flex flex-col items-start">
           <h2 className="mb-2 mt-8 text-2xl font-semibold">Steps:</h2>
           <ol className="ml-6 list-decimal">
-            {recipeData.steps.map((step) => (
-              <li key={step.id} className="mb-1">
-                {step.description}
-              </li>
-            ))}
+            {recipeData.steps
+              .sort((a, b) => a.order - b.order)
+              .map((step) => (
+                <li key={step.id} className="mb-1">
+                  {step.description}
+                </li>
+              ))}
           </ol>
         </div>
       </div>
